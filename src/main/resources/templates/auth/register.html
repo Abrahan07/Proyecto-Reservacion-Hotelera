@@ -2,92 +2,259 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>StayTic - Register</title>
+    <title>Staytic - Registro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --burdo: #8B2E2E;
+            --burdo-dark: #6e2323;
+            --burdo-light: #a63535;
+            --bg: #e8e8e8;
+            --card-bg: #ffffff;
+            --text: #2c2c2c;
+            --muted: #666;
+            --border: #d0d0d0;
+        }
+
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            font-family: 'DM Sans', sans-serif;
+            background-color: var(--bg);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* ── TOP NAV ── */
+        header {
+            background: var(--burdo);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        header .nav-brand {
+            font-family: 'Playfair Display', serif;
+            color: white;
+            font-size: 1.15rem;
+            letter-spacing: 0.5px;
+        }
+
+        /* ── MAIN ── */
+        main {
+            flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            padding: 3rem 1rem;
         }
+
         .card {
-            background: white;
-            padding: 2.5rem;
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            background: var(--card-bg);
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+            padding: 2.8rem 2.4rem 2.4rem;
             width: 100%;
-            max-width: 420px;
+            max-width: 430px;
         }
-        .logo { text-align: center; margin-bottom: 1.5rem; }
-        .logo h1 { font-size: 2rem; color: #1a1a2e; letter-spacing: 2px; }
-        .logo span { color: #4361ee; }
-        .field { margin-bottom: 1rem; }
-        label { display: block; color: #555; font-size: 0.9rem; margin-bottom: 0.3rem; }
-        input {
+
+        /* ── LOGO AREA ── */
+        .logo-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.6rem;
+        }
+        .logo-icon {
+            width: 62px;
+            height: 62px;
+            flex-shrink: 0;
+        }
+        .logo-text h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--burdo);
+            line-height: 1;
+        }
+        .logo-text p {
+            color: var(--muted);
+            font-size: 0.88rem;
+            margin-top: 0.25rem;
+        }
+
+        /* ── FORM ── */
+        .field { margin-bottom: 1.1rem; }
+        label {
+            display: block;
+            color: var(--text);
+            font-size: 0.88rem;
+            font-weight: 500;
+            margin-bottom: 0.35rem;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
             width: 100%;
-            padding: 0.7rem 1rem;
-            border: 1.5px solid #ddd;
+            padding: 0.65rem 1rem;
+            border: 1.5px solid var(--border);
             border-radius: 8px;
-            font-size: 1rem;
-            transition: border 0.2s;
+            font-size: 0.95rem;
+            font-family: 'DM Sans', sans-serif;
+            color: var(--text);
+            background: #fafafa;
+            transition: border-color 0.2s;
         }
-        input:focus { outline: none; border-color: #4361ee; }
-        .error { color: #c0392b; font-size: 0.82rem; margin-top: 0.3rem; display: block; }
-        button {
+        input:focus {
+            outline: none;
+            border-color: var(--burdo);
+        }
+        input::placeholder { color: #bbb; }
+
+        .error {
+            color: #c0392b;
+            font-size: 0.8rem;
+            margin-top: 0.3rem;
+            display: block;
+        }
+
+        /* ── BUTTONS ── */
+        .btn {
             width: 100%;
-            padding: 0.8rem;
-            background: #4361ee;
-            color: white;
+            padding: 0.78rem 1rem;
             border: none;
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 0.95rem;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
             cursor: pointer;
-            margin-top: 0.5rem;
-            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: background 0.2s, transform 0.1s;
         }
-        button:hover { background: #3a56d4; }
-        .link { text-align: center; margin-top: 1rem; font-size: 0.9rem; color: #888; }
-        .link a { color: #4361ee; text-decoration: none; }
+        .btn:active { transform: scale(0.98); }
+
+        .btn-primary {
+            background: var(--burdo);
+            color: white;
+            margin-top: 0.4rem;
+        }
+        .btn-primary:hover { background: var(--burdo-dark); }
+
+        .link {
+            text-align: center;
+            margin-top: 1.1rem;
+            font-size: 0.87rem;
+            color: var(--muted);
+        }
+        .link a {
+            color: var(--burdo);
+            text-decoration: none;
+            font-weight: 500;
+        }
         .link a:hover { text-decoration: underline; }
+
+        /* ── FOOTER ── */
+        footer {
+            background: var(--burdo);
+            padding: 1rem;
+            text-align: center;
+        }
+        footer p {
+            color: rgba(255,255,255,0.75);
+            font-size: 0.82rem;
+        }
+        footer hr {
+            border: none;
+            border-top: 1px solid rgba(255,255,255,0.25);
+            margin-bottom: 0.6rem;
+        }
     </style>
 </head>
 <body>
-<div class="card">
-    <div class="logo">
-        <h1>Stay<span>Tic</span></h1>
-        <p>Create your account</p>
-    </div>
 
-    <form th:action="@{/register}" th:object="${user}" method="post">
-        <div class="field">
-            <label>Full Name</label>
-            <input type="text" th:field="*{name}" placeholder="John Doe" />
-            <span th:if="${#fields.hasErrors('name')}"
-                  th:errors="*{name}" class="error"></span>
-        </div>
-        <div class="field">
-            <label>Email</label>
-            <input type="email" th:field="*{email}" placeholder="your@email.com" />
-            <span th:if="${#fields.hasErrors('email')}"
-                  th:errors="*{email}" class="error"></span>
-        </div>
-        <div class="field">
-            <label>Phone</label>
-            <input type="text" th:field="*{phone}" placeholder="+57 300 000 0000" />
-        </div>
-        <div class="field">
-            <label>Password</label>
-            <input type="password" th:field="*{password}" placeholder="••••••••" />
-        </div>
-        <button type="submit">Create Account</button>
-    </form>
+<!-- NAV -->
+<header>
+    <svg width="28" height="28" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <rect x="6" y="6" width="52" height="52" rx="6" fill="none" stroke="white" stroke-width="3.5"/>
+        <rect x="16" y="16" width="10" height="10" rx="1.5" fill="white"/>
+        <rect x="38" y="16" width="10" height="10" rx="1.5" fill="white"/>
+        <rect x="16" y="38" width="10" height="10" rx="1.5" fill="white"/>
+        <rect x="38" y="38" width="10" height="10" rx="1.5" fill="white"/>
+        <rect x="27" y="44" width="10" height="14" rx="1.5" fill="white"/>
+    </svg>
+    <span class="nav-brand">Staytic</span>
+</header>
 
-    <div class="link">
-        Already have an account? <a th:href="@{/login}">Sign in</a>
+<!-- MAIN -->
+<main>
+    <div class="card">
+
+        <!-- Logo -->
+        <div class="logo-row">
+            <svg class="logo-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                <rect x="6" y="6" width="52" height="52" rx="6" fill="none" stroke="#8B2E2E" stroke-width="3.5"/>
+                <rect x="16" y="16" width="10" height="10" rx="1.5" fill="#8B2E2E"/>
+                <rect x="38" y="16" width="10" height="10" rx="1.5" fill="#8B2E2E"/>
+                <rect x="16" y="38" width="10" height="10" rx="1.5" fill="#8B2E2E"/>
+                <rect x="38" y="38" width="10" height="10" rx="1.5" fill="#8B2E2E"/>
+                <rect x="27" y="44" width="10" height="14" rx="1.5" fill="#8B2E2E"/>
+            </svg>
+            <div class="logo-text">
+                <h1>Staytic</h1>
+                <p>Crea tu cuenta</p>
+            </div>
+        </div>
+
+        <!-- Form -->
+        <form th:action="@{/register}" th:object="${user}" method="post">
+
+            <div class="field">
+                <label>Nombre Completo</label>
+                <input type="text" th:field="*{name}" placeholder="Juan Pérez" />
+                <span th:if="${#fields.hasErrors('name')}"
+                      th:errors="*{name}" class="error"></span>
+            </div>
+
+            <div class="field">
+                <label>Correo Electrónico</label>
+                <input type="email" th:field="*{email}" placeholder="ejemplo@gmail.com" />
+                <span th:if="${#fields.hasErrors('email')}"
+                      th:errors="*{email}" class="error"></span>
+            </div>
+
+            <div class="field">
+                <label>Teléfono</label>
+                <input type="text" th:field="*{phone}" placeholder="+57 300 000 0000" />
+            </div>
+
+            <div class="field">
+                <label>Contraseña</label>
+                <input type="password" th:field="*{password}" placeholder="••••••••••••" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                <svg width="16" height="16" fill="white" viewBox="0 0 24 24">
+                    <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+                </svg>
+                Crear cuenta
+            </button>
+        </form>
+
+        <div class="link">
+            ¿Ya tienes una cuenta? <a th:href="@{/login}">Inicia sesión</a>
+        </div>
+
     </div>
-</div>
+</main>
+
+<!-- FOOTER -->
+<footer>
+    <hr>
+    <p>© 2026 Staytic. All rights reserved.</p>
+</footer>
+
 </body>
 </html>

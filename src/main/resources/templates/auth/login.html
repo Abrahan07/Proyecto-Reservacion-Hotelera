@@ -3,105 +3,228 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>StayTic - Login</title>
+    <title>Staytic - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --burdo: #8B2E2E;
+            --burdo-dark: #6e2323;
+            --bg: #e8e8e8;
+            --card-bg: #ffffff;
+            --text: #2c2c2c;
+            --muted: #666;
+            --border: #d0d0d0;
+        }
+
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            font-family: 'DM Sans', sans-serif;
+            background-color: var(--bg);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background: var(--burdo);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        header .nav-brand {
+            font-family: 'Playfair Display', serif;
+            color: white;
+            font-size: 1.15rem;
+            letter-spacing: 0.5px;
+        }
+
+        main {
+            flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            padding: 3rem 1rem;
         }
+
         .card {
-            background: white;
-            padding: 2.5rem;
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            background: var(--card-bg);
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+            padding: 2.8rem 2.4rem 2.4rem;
             width: 100%;
-            max-width: 420px;
+            max-width: 430px;
         }
-        .logo {
-            text-align: center;
-            margin-bottom: 1.5rem;
+
+        .logo-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.4rem;
         }
-        .logo h1 {
+        .logo-icon {
+            width: 62px;
+            height: 62px;
+            flex-shrink: 0;
+        }
+        .logo-text h1 {
+            font-family: 'Playfair Display', serif;
             font-size: 2rem;
-            color: #1a1a2e;
-            letter-spacing: 2px;
+            color: var(--burdo);
+            line-height: 1;
         }
-        .logo span { color: #4361ee; }
-        .logo p { color: #888; font-size: 0.9rem; }
+        .logo-text p {
+            color: var(--muted);
+            font-size: 0.88rem;
+            margin-top: 0.25rem;
+        }
+
         .alert {
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
-        }
-        .alert-error { background: #ffe0e0; color: #c0392b; }
-        .alert-success { background: #e0f7e9; color: #27ae60; }
-        .field { margin-bottom: 1rem; }
-        label { display: block; color: #555; font-size: 0.9rem; margin-bottom: 0.3rem; }
-        input {
-            width: 100%;
             padding: 0.7rem 1rem;
-            border: 1.5px solid #ddd;
             border-radius: 8px;
-            font-size: 1rem;
-            transition: border 0.2s;
+            margin-bottom: 1.2rem;
+            font-size: 0.88rem;
         }
-        input:focus { outline: none; border-color: #4361ee; }
-        button {
+        .alert-error   { background: #ffe0e0; color: #c0392b; }
+        .alert-success { background: #e0f7e9; color: #27ae60; }
+
+        .field { margin-bottom: 1.1rem; }
+        label {
+            display: block;
+            color: var(--text);
+            font-size: 0.88rem;
+            font-weight: 500;
+            margin-bottom: 0.35rem;
+        }
+        input[type="email"],
+        input[type="password"] {
             width: 100%;
-            padding: 0.8rem;
-            background: #4361ee;
-            color: white;
+            padding: 0.65rem 1rem;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: 'DM Sans', sans-serif;
+            color: var(--text);
+            background: #fafafa;
+            transition: border-color 0.2s;
+        }
+        input:focus { outline: none; border-color: var(--burdo); }
+        input::placeholder { color: #bbb; }
+
+        .btn {
+            width: 100%;
+            padding: 0.78rem 1rem;
             border: none;
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 0.95rem;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
             cursor: pointer;
-            margin-top: 0.5rem;
-            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: background 0.2s, transform 0.1s;
         }
-        button:hover { background: #3a56d4; }
-        .link { text-align: center; margin-top: 1rem; font-size: 0.9rem; color: #888; }
-        .link a { color: #4361ee; text-decoration: none; }
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background: var(--burdo); color: white; margin-top: 0.4rem; }
+        .btn-primary:hover { background: var(--burdo-dark); }
+
+        .link {
+            text-align: center;
+            margin-top: 1.1rem;
+            font-size: 0.87rem;
+            color: var(--muted);
+        }
+        .link a {
+            color: var(--burdo);
+            text-decoration: none;
+            font-weight: 500;
+        }
         .link a:hover { text-decoration: underline; }
+
+        footer {
+            background: var(--burdo);
+            padding: 1rem;
+            text-align: center;
+        }
+        footer hr {
+            border: none;
+            border-top: 1px solid rgba(255,255,255,0.25);
+            margin-bottom: 0.6rem;
+        }
+        footer p {
+            color: rgba(255,255,255,0.75);
+            font-size: 0.82rem;
+        }
     </style>
 </head>
 <body>
-<div class="card">
-    <div class="logo">
-        <h1>Stay<span>Tic</span></h1>
-        <p>Hotel Reservation System</p>
-    </div>
 
-    <div th:if="${param.error}" class="alert alert-error">
-        Invalid email or password.
-    </div>
-    <div th:if="${param.logout}" class="alert alert-success">
-        Session closed successfully.
-    </div>
-    <div th:if="${param.registered}" class="alert alert-success">
-        Registration successful. Please log in.
-    </div>
+<header>
+    <svg width="28" height="28" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <rect x="6" y="6" width="52" height="52" rx="6" fill="none" stroke="white" stroke-width="3.5"/>
+        <rect x="16" y="16" width="10" height="10" rx="1.5" fill="white"/>
+        <rect x="38" y="16" width="10" height="10" rx="1.5" fill="white"/>
+        <rect x="16" y="38" width="10" height="10" rx="1.5" fill="white"/>
+        <rect x="38" y="38" width="10" height="10" rx="1.5" fill="white"/>
+        <rect x="27" y="44" width="10" height="14" rx="1.5" fill="white"/>
+    </svg>
+    <span class="nav-brand">Staytic</span>
+</header>
 
-    <form th:action="@{/login}" method="post">
-        <div class="field">
-            <label>Email</label>
-            <input type="email" name="username" placeholder="your@email.com" required />
+<main>
+    <div class="card">
+
+        <div class="logo-row">
+            <svg class="logo-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                <rect x="6" y="6" width="52" height="52" rx="6" fill="none" stroke="#8B2E2E" stroke-width="3.5"/>
+                <rect x="16" y="16" width="10" height="10" rx="1.5" fill="#8B2E2E"/>
+                <rect x="38" y="16" width="10" height="10" rx="1.5" fill="#8B2E2E"/>
+                <rect x="16" y="38" width="10" height="10" rx="1.5" fill="#8B2E2E"/>
+                <rect x="38" y="38" width="10" height="10" rx="1.5" fill="#8B2E2E"/>
+                <rect x="27" y="44" width="10" height="14" rx="1.5" fill="#8B2E2E"/>
+            </svg>
+            <div class="logo-text">
+                <h1>Staytic</h1>
+                <p>Bienvenido de nuevo</p>
+            </div>
         </div>
-        <div class="field">
-            <label>Password</label>
-            <input type="password" name="password" placeholder="••••••••" required />
-        </div>
-        <button type="submit">Sign In</button>
-    </form>
 
-    <div class="link">
-        Don't have an account? <a th:href="@{/register}">Register here</a>
+        <div th:if="${param.error}" class="alert alert-error">
+            Correo o contraseña incorrectos.
+        </div>
+        <div th:if="${param.logout}" class="alert alert-success">
+            Sesión cerrada exitosamente.
+        </div>
+        <div th:if="${param.registered}" class="alert alert-success">
+            Registro exitoso. Por favor inicia sesión.
+        </div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="field">
+                <label>Correo Electrónico</label>
+                <input type="email" name="username" placeholder="ejemplo@gmail.com" required />
+            </div>
+            <div class="field">
+                <label>Contraseña</label>
+                <input type="password" name="password" placeholder="••••••••••••" required />
+            </div>
+            <button type="submit" class="btn btn-primary">→ Ingresar</button>
+        </form>
+
+        <div class="link">
+            ¿No tienes una cuenta? <a th:href="@{/register}">Regístrate aquí</a>
+        </div>
+
     </div>
-</div>
+</main>
+
+<footer>
+    <hr>
+    <p>© 2026 Staytic. All rights reserved.</p>
+</footer>
+
 </body>
 </html>
