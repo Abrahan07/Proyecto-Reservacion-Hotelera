@@ -30,14 +30,17 @@ public class AuthController {
 
     @GetMapping("/register")
     public String showRegister(Model model) {
-        model.addAttribute("usuario", new User());
+        model.addAttribute("user", new User());
         return "auth/register";
     }
 
     @PostMapping("/register")
-    public String register(@Valid @ModelAttribute User user,
+    public String register(@Valid @ModelAttribute("user") User user,
                            BindingResult result) {
-        if (result.hasErrors()) return "auth/register";
+        if (result.hasErrors()) {
+            result.getAllErrors().forEach(e -> System.out.println("ERROR: " + e));
+            return "auth/register";
+        }
         try {
             service.register(user);
             return "redirect:/login?registered";

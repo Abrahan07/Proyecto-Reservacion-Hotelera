@@ -23,12 +23,14 @@ public class UserService {
     }
 
     @Transactional
-    public void register(User usuario) {
-        if (repo.existsByEmail(usuario.getEmail()))
+    public void register(User user) {
+        System.out.println(">>> Registering: " + user.getEmail());
+        if (repo.existsByEmail(user.getEmail()))
             throw new RuntimeException("Email already registered");
-        usuario.setPassword(encoder.encode(usuario.getPassword()));
-        usuario.setRole(Role.GUEST);
-        repo.save(usuario);
+        user.setPassword(encoder.encode(user.getPassword()));
+        user.setRole(Role.GUEST);
+        repo.save(user);
+        System.out.println(">>> Saved successfully!");
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -49,11 +51,11 @@ public class UserService {
         u.setRole(newRole);
     }
 
-    @PreAuthorize("#usuario.email == authentication.name or hasRole('ADMIN')")
+    @PreAuthorize("#user.email == authentication.name or hasRole('ADMIN')")
     @Transactional
-    public void updateName(User usuario) {
-        User existing = repo.findById(usuario.getUserId())
+    public void updateName(User user) {
+        User existing = repo.findById(user.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        existing.setName(usuario.getName());
+        existing.setName(user.getName());
     }
 }

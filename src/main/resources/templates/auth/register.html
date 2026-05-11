@@ -61,7 +61,7 @@
         <p>Create your account</p>
     </div>
 
-    <form th:action="@{/register}" th:object="${usuario}" method="post">
+    <form th:action="@{/register}" th:object="${user}" method="post">
         <div class="field">
             <label>Full Name</label>
             <input type="text" th:field="*{name}" placeholder="John Doe" />
