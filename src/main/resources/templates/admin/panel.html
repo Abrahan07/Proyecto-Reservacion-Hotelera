@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>StayTic - Admin Panel</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; min-height: 100vh; }
+        .navbar {
+            background: #1a1a2e;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar h2 { font-size: 1.5rem; letter-spacing: 2px; }
+        .navbar span { color: #4361ee; }
+        .navbar a { color: #aaa; text-decoration: none; font-size: 0.9rem; }
+        .navbar a:hover { color: white; }
+        .container { max-width: 1000px; margin: 3rem auto; padding: 0 1rem; }
+        h1 { color: #1a1a2e; margin-bottom: 1.5rem; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        thead { background: #1a1a2e; color: white; }
+        th, td { padding: 1rem 1.2rem; text-align: left; font-size: 0.95rem; }
+        tbody tr:nth-child(even) { background: #f8f9fa; }
+        tbody tr:hover { background: #eef2ff; }
+        .badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .badge-admin { background: #ffeaa7; color: #d35400; }
+        .badge-receptionist { background: #d5f5e3; color: #1e8449; }
+        .badge-guest { background: #dfe6e9; color: #2d3436; }
+        .active-yes { color: #27ae60; font-weight: bold; }
+        .active-no { color: #e74c3c; font-weight: bold; }
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <h2>Stay<span>Tic</span> — Admin</h2>
+    <a th:href="@{/dashboard}">← Back to Dashboard</a>
+</div>
+
+<div class="container">
+    <h1>👥 User Management</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Role</th>
+            <th>Active</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="u : ${users}">
+            <td th:text="${u.userId}"></td>
+            <td th:text="${u.name}"></td>
+            <td th:text="${u.email}"></td>
+            <td th:text="${u.phone}"></td>
+            <td>
+                        <span th:class="${u.role.name() == 'ADMIN'} ? 'badge badge-admin' :
+                                        (${u.role.name() == 'RECEPTIONIST'} ? 'badge badge-receptionist' :
+                                        'badge badge-guest')"
+                              th:text="${u.role}"></span>
+            </td>
+            <td>
+                        <span th:class="${u.active} ? 'active-yes' : 'active-no'"
+                              th:text="${u.active} ? 'Yes' : 'No'"></span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

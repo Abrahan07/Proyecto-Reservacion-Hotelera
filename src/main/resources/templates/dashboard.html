@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>StayTic - Dashboard</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; min-height: 100vh; }
+        .navbar {
+            background: #1a1a2e;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar h2 { font-size: 1.5rem; letter-spacing: 2px; }
+        .navbar span { color: #4361ee; }
+        .navbar form button {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .navbar form button:hover { background: #c0392b; }
+        .container { max-width: 900px; margin: 3rem auto; padding: 0 1rem; }
+        .welcome-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .welcome-card h1 { color: #1a1a2e; margin-bottom: 0.5rem; }
+        .welcome-card p { color: #666; margin-bottom: 1.5rem; }
+        .badge {
+            display: inline-block;
+            padding: 0.4rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+        }
+        .badge-admin { background: #ffeaa7; color: #d35400; }
+        .badge-receptionist { background: #d5f5e3; color: #1e8449; }
+        .badge-guest { background: #dfe6e9; color: #2d3436; }
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        .action-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            text-decoration: none;
+            color: #1a1a2e;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .action-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+        .action-card .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .action-card h3 { font-size: 1rem; }
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <h2>Stay<span>Tic</span></h2>
+    <form th:action="@{/logout}" method="post">
+        <button type="submit">Sign Out</button>
+    </form>
+</div>
+
+<div class="container">
+    <div class="welcome-card">
+        <h1>Welcome back! 👋</h1>
+        <p>Signed in as <strong th:text="${email}"></strong></p>
+        <p style="color:#888; font-size:0.9rem;">
+            Name: <span th:text="${userName}"></span>
+        </p>
+
+        <span sec:authorize="hasRole('ADMIN')" class="badge badge-admin">
+                ⭐ Administrator
+            </span>
+        <span sec:authorize="hasRole('RECEPTIONIST')" class="badge badge-receptionist">
+                🛎 Receptionist
+            </span>
+        <span sec:authorize="hasRole('GUEST')" class="badge badge-guest">
+                🧳 Guest
+            </span>
+    </div>
+
+    <div class="cards-grid">
+        <!-- Solo ADMIN -->
+        <a sec:authorize="hasRole('ADMIN')"
+           th:href="@{/admin}" class="action-card">
+            <div class="icon">👥</div>
+            <h3>Manage Users</h3>
+        </a>
+
+        <!-- ADMIN y RECEPTIONIST -->
+        <a sec:authorize="hasAnyRole('ADMIN','RECEPTIONIST')"
+           th:href="@{/receptionist}" class="action-card">
+            <div class="icon">🏨</div>
+            <h3>Reservations</h3>
+        </a>
+
+        <!-- Todos -->
+        <a th:href="@{/dashboard}" class="action-card">
+            <div class="icon">🛏</div>
+            <h3>My Bookings</h3>
+        </a>
+
+        <a th:href="@{/dashboard}" class="action-card">
+            <div class="icon">👤</div>
+            <h3>My Profile</h3>
+        </a>
+    </div>
+</div>
+</body>
+</html>
