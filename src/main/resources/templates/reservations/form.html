@@ -41,13 +41,12 @@
     <h1 th:text="${editing} ? 'Editar reservacion' : 'Nueva reservacion'"></h1>
 
     <section class="panel">
-        <div th:if="${#fields.hasGlobalErrors()}" class="global-error">
-            <div th:each="err : ${#fields.globalErrors()}" th:text="${err}"></div>
-        </div>
-
         <form th:object="${reservationForm}"
               th:action="${editing} ? @{/receptionist/reservations/{id}(id=${reservationForm.reservationId})} : @{/receptionist/reservations}"
               method="post">
+            <div th:if="${#fields.hasGlobalErrors()}" class="global-error">
+                <div th:each="err : ${#fields.globalErrors()}" th:text="${err}"></div>
+            </div>
             <div class="grid">
                 <div class="field-full">
                     <label for="userId">Usuario</label>

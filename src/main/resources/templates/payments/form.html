@@ -38,13 +38,12 @@
     <h1 th:text="${editing} ? 'Editar pago' : 'Nuevo pago'"></h1>
 
     <section class="panel">
-        <div th:if="${#fields.hasGlobalErrors()}" class="global-error">
-            <div th:each="err : ${#fields.globalErrors()}" th:text="${err}"></div>
-        </div>
-
         <form th:object="${payment}"
               th:action="${editing} ? @{/receptionist/payments/{id}(id=${payment.paymentId})} : @{/receptionist/payments}"
               method="post">
+            <div th:if="${#fields.hasGlobalErrors()}" class="global-error">
+                <div th:each="err : ${#fields.globalErrors()}" th:text="${err}"></div>
+            </div>
             <div class="grid">
                 <div class="field-full">
                     <label for="reservationId">Reservacion</label>
