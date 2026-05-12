@@ -1,20 +1,47 @@
 package com.universidad.staytic.model;
 
-import java.util.Date;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
+
+@Entity
+@Table(name = "promociones")
 public class Promotion {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int promotionId;
+
+    @NotBlank(message = "El codigo es obligatorio")
+    @Pattern(regexp = "^[A-Za-z0-9-]{3,30}$", message = "El codigo solo puede contener letras, numeros y guiones")
+    @Column(nullable = false, unique = true, length = 30)
     private String code;
+
+    @Size(max = 200, message = "La descripcion no puede superar 200 caracteres")
+    @Column(length = 200)
     private String description;
+
+    @DecimalMin(value = "0.0", inclusive = false, message = "El descuento debe ser mayor que 0")
+    @DecimalMax(value = "100.0", message = "El descuento no puede superar 100")
+    @Column(nullable = false)
     private float discount;
-    private Date startDate;
-    private Date endDate;
+
+    @NotNull(message = "La fecha inicial es obligatoria")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Column(nullable = false)
+    private LocalDate startDate;
+
+    @NotNull(message = "La fecha final es obligatoria")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Column(nullable = false)
+    private LocalDate endDate;
 
     public Promotion() {}
 
     public Promotion(int promotionId, String code, String description,
-                     float discount, Date startDate, Date endDate) {
+                     float discount, LocalDate startDate, LocalDate endDate) {
         this.promotionId = promotionId;
         this.code = code;
         this.description = description;
@@ -23,8 +50,8 @@ public class Promotion {
         this.endDate = endDate;
     }
 
-    // promotionId: solo get, el id no cambia
     public int getPromotionId() { return promotionId; }
+    public void setPromotionId(int promotionId) { this.promotionId = promotionId; }
 
     public String getCode() { return code; }
     public void setCode(String code) { this.code = code; }
@@ -35,11 +62,11 @@ public class Promotion {
     public float getDiscount() { return discount; }
     public void setDiscount(float discount) { this.discount = discount; }
 
-    public Date getStartDate() { return startDate; }
-    public void setStartDate(Date startDate) { this.startDate = startDate; }
+    public LocalDate getStartDate() { return startDate; }
+    public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
 
-    public Date getEndDate() { return endDate; }
-    public void setEndDate(Date endDate) { this.endDate = endDate; }
+    public LocalDate getEndDate() { return endDate; }
+    public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
 
     @Override
     public String toString() {

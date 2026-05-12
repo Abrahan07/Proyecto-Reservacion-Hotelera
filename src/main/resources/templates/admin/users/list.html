@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Staytic - Usuarios</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Arial, sans-serif; background: #f4f4f4; color: #222; }
+        header { background: #8B2E2E; color: white; padding: 14px 22px; display: flex; justify-content: space-between; gap: 16px; align-items: center; }
+        header a { color: white; text-decoration: none; font-weight: 600; }
+        main { max-width: 1180px; margin: 26px auto; padding: 0 16px; }
+        .topbar { display: flex; justify-content: space-between; gap: 16px; align-items: center; margin-bottom: 18px; }
+        h1 { margin: 0; color: #8B2E2E; font-size: 28px; }
+        .btn { border: 0; border-radius: 7px; padding: 10px 14px; cursor: pointer; text-decoration: none; display: inline-block; font-weight: 600; }
+        .btn-primary { background: #8B2E2E; color: white; }
+        .btn-secondary { background: #555; color: white; }
+        .btn-danger { background: #b3261e; color: white; }
+        .btn-small { padding: 7px 10px; font-size: 13px; }
+        .panel { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 18px; }
+        .filters { display: grid; grid-template-columns: repeat(4, minmax(140px, 1fr)); gap: 12px; align-items: end; }
+        label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 9px 10px; border: 1px solid #bbb; border-radius: 6px; }
+        .alert { padding: 10px 12px; border-radius: 7px; margin-bottom: 14px; background: #e8f5e9; color: #1b5e20; }
+        .table-wrap { overflow-x: auto; background: white; border: 1px solid #ddd; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; min-width: 850px; }
+        th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; }
+        th { background: #8B2E2E; color: white; font-size: 13px; text-transform: uppercase; }
+        tr:last-child td { border-bottom: 0; }
+        .actions { display: flex; gap: 8px; align-items: center; }
+        .badge { padding: 4px 9px; border-radius: 999px; font-size: 12px; font-weight: 700; background: #eee; }
+        .active { color: #1b5e20; font-weight: 700; }
+        .inactive { color: #b3261e; font-weight: 700; }
+        @media (max-width: 760px) {
+            header, .topbar { align-items: stretch; flex-direction: column; }
+            .filters { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <strong>Staytic - Administracion</strong>
+    <nav>
+        <a th:href="@{/dashboard}">Dashboard</a>
+    </nav>
+</header>
+
+<main>
+    <div class="topbar">
+        <h1>Gestion de usuarios</h1>
+        <a class="btn btn-primary" th:href="@{/admin/users/new}">Nuevo usuario</a>
+    </div>
+
+    <div th:if="${success}" class="alert" th:text="${success}"></div>
+
+    <section class="panel">
+        <form class="filters" th:action="@{/admin/users}" method="get">
+            <div>
+                <label for="name">Nombre</label>
+                <input id="name" name="name" type="text" th:value="${name}" placeholder="Buscar por nombre">
+            </div>
+            <div>
+                <label for="email">Email</label>
+                <input id="email" name="email" type="text" th:value="${email}" placeholder="Buscar por email">
+            </div>
+            <div>
+                <label for="role">Rol</label>
+                <select id="role" name="role">
+                    <option value="">Todos</option>
+                    <option th:each="r : ${roles}" th:value="${r}" th:text="${r}"
+                            th:selected="${selectedRole != null and selectedRole == r}"></option>
+                </select>
+            </div>
+            <div>
+                <button class="btn btn-primary" type="submit">Buscar</button>
+                <a class="btn btn-secondary" th:href="@{/admin/users}">Limpiar</a>
+            </div>
+        </form>
+    </section>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Telefono</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${#lists.isEmpty(users)}">
+                <td colspan="7">No hay usuarios registrados con esos filtros.</td>
+            </tr>
+            <tr th:each="u : ${users}">
+                <td th:text="${u.userId}"></td>
+                <td th:text="${u.name}"></td>
+                <td th:text="${u.email}"></td>
+                <td th:text="${u.phone}"></td>
+                <td><span class="badge" th:text="${u.role}"></span></td>
+                <td>
+                    <span th:class="${u.active} ? 'active' : 'inactive'"
+                          th:text="${u.active} ? 'Activo' : 'Inactivo'"></span>
+                </td>
+                <td>
+                    <div class="actions">
+                        <a class="btn btn-secondary btn-small" th:href="@{/admin/users/{id}/edit(id=${u.userId})}">Editar</a>
+                        <form th:action="@{/admin/users/{id}/delete(id=${u.userId})}" method="post"
+                              onsubmit="return confirm('Seguro que deseas eliminar este usuario?');">
+                            <button class="btn btn-danger btn-small" type="submit">Eliminar</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Staytic - Disponibilidad</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Arial, sans-serif; background: #f4f4f4; color: #222; }
+        header { background: #8B2E2E; color: white; padding: 14px 22px; display: flex; justify-content: space-between; gap: 16px; align-items: center; }
+        header a { color: white; text-decoration: none; font-weight: 600; }
+        main { max-width: 920px; margin: 26px auto; padding: 0 16px; }
+        h1 { margin: 0 0 18px; color: #8B2E2E; font-size: 28px; }
+        .panel { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 18px; }
+        .filters { display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; align-items: end; }
+        label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 5px; }
+        input { width: 100%; padding: 9px 10px; border: 1px solid #bbb; border-radius: 6px; }
+        .btn { border: 0; border-radius: 7px; padding: 10px 14px; cursor: pointer; text-decoration: none; display: inline-block; font-weight: 600; }
+        .btn-primary { background: #8B2E2E; color: white; }
+        .error { background: #fdecea; color: #b3261e; padding: 10px 12px; border-radius: 7px; margin-bottom: 14px; }
+        table { width: 100%; border-collapse: collapse; background: white; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
+        th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; }
+        th { background: #8B2E2E; color: white; font-size: 13px; text-transform: uppercase; }
+        @media (max-width: 700px) {
+            header { align-items: stretch; flex-direction: column; }
+            .filters { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <strong>Staytic - Disponibilidad</strong>
+    <a th:href="@{/receptionist/reservations}">Volver a reservaciones</a>
+</header>
+
+<main>
+    <h1>Consultar disponibilidad</h1>
+
+    <section class="panel">
+        <form class="filters" th:action="@{/receptionist/reservations/availability}" method="get">
+            <div>
+                <label for="checkIn">Entrada</label>
+                <input id="checkIn" name="checkIn" type="date" th:value="${checkIn}" required>
+            </div>
+            <div>
+                <label for="checkOut">Salida</label>
+                <input id="checkOut" name="checkOut" type="date" th:value="${checkOut}" required>
+            </div>
+            <div>
+                <button class="btn btn-primary" type="submit">Consultar</button>
+            </div>
+        </form>
+    </section>
+
+    <div th:if="${error}" class="error" th:text="${error}"></div>
+
+    <table th:if="${rooms != null}">
+        <thead>
+        <tr>
+            <th>Numero</th>
+            <th>Piso</th>
+            <th>Tipo</th>
+            <th>Precio/noche</th>
+            <th>Estado</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${#lists.isEmpty(rooms)}">
+            <td colspan="5">No hay habitaciones disponibles para ese rango.</td>
+        </tr>
+        <tr th:each="r : ${rooms}">
+            <td th:text="${r.number}"></td>
+            <td th:text="${r.floor}"></td>
+            <td th:text="${r.type}"></td>
+            <td th:text="${#numbers.formatDecimal(r.pricePerNight, 1, 2)}"></td>
+            <td th:text="${r.status}"></td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

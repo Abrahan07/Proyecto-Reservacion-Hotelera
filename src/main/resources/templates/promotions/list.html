@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Staytic - Promociones</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Arial, sans-serif; background: #f4f4f4; color: #222; }
+        header { background: #8B2E2E; color: white; padding: 14px 22px; display: flex; justify-content: space-between; gap: 16px; align-items: center; }
+        header a { color: white; text-decoration: none; font-weight: 600; margin-left: 14px; }
+        main { max-width: 1080px; margin: 26px auto; padding: 0 16px; }
+        .topbar { display: flex; justify-content: space-between; gap: 16px; align-items: center; margin-bottom: 18px; }
+        h1 { margin: 0; color: #8B2E2E; font-size: 28px; }
+        .btn { border: 0; border-radius: 7px; padding: 10px 14px; cursor: pointer; text-decoration: none; display: inline-block; font-weight: 600; }
+        .btn-primary { background: #8B2E2E; color: white; }
+        .btn-secondary { background: #555; color: white; }
+        .btn-danger { background: #b3261e; color: white; }
+        .btn-small { padding: 7px 10px; font-size: 13px; }
+        .panel { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 18px; }
+        .filters { display: grid; grid-template-columns: repeat(5, minmax(120px, 1fr)); gap: 12px; align-items: end; }
+        label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 5px; }
+        input { width: 100%; padding: 9px 10px; border: 1px solid #bbb; border-radius: 6px; }
+        .alert { padding: 10px 12px; border-radius: 7px; margin-bottom: 14px; background: #e8f5e9; color: #1b5e20; }
+        .table-wrap { overflow-x: auto; background: white; border: 1px solid #ddd; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; min-width: 860px; }
+        th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; vertical-align: top; }
+        th { background: #8B2E2E; color: white; font-size: 13px; text-transform: uppercase; }
+        .actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .badge { padding: 4px 9px; border-radius: 999px; font-size: 12px; font-weight: 700; background: #eee; display: inline-block; }
+        @media (max-width: 850px) {
+            header, .topbar { align-items: stretch; flex-direction: column; }
+            .filters { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <strong>Staytic - Promociones</strong>
+    <nav>
+        <a th:href="@{/dashboard}">Dashboard</a>
+        <a th:href="@{/receptionist/reservations}">Reservaciones</a>
+    </nav>
+</header>
+
+<main>
+    <div class="topbar">
+        <h1>Gestion de promociones</h1>
+        <a class="btn btn-primary" th:href="@{/receptionist/promotions/new}">Nueva promocion</a>
+    </div>
+
+    <div th:if="${success}" class="alert" th:text="${success}"></div>
+
+    <section class="panel">
+        <form class="filters" th:action="@{/receptionist/promotions}" method="get">
+            <div>
+                <label for="code">Codigo</label>
+                <input id="code" name="code" type="text" th:value="${code}" placeholder="PROMO10">
+            </div>
+            <div>
+                <label for="discount">Descuento %</label>
+                <input id="discount" name="discount" type="number" min="0" max="100" step="0.01" th:value="${discount}">
+            </div>
+            <div>
+                <label for="startDate">Vigente desde</label>
+                <input id="startDate" name="startDate" type="date" th:value="${startDate}">
+            </div>
+            <div>
+                <label for="endDate">Vigente hasta</label>
+                <input id="endDate" name="endDate" type="date" th:value="${endDate}">
+            </div>
+            <div>
+                <button class="btn btn-primary" type="submit">Buscar</button>
+                <a class="btn btn-secondary" th:href="@{/receptionist/promotions}">Limpiar</a>
+            </div>
+        </form>
+    </section>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Codigo</th>
+                <th>Descripcion</th>
+                <th>Descuento</th>
+                <th>Vigencia</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${#lists.isEmpty(promotions)}">
+                <td colspan="6">No hay promociones con esos filtros.</td>
+            </tr>
+            <tr th:each="p : ${promotions}">
+                <td th:text="${p.promotionId}"></td>
+                <td><span class="badge" th:text="${p.code}"></span></td>
+                <td th:text="${p.description}"></td>
+                <td th:text="${#numbers.formatDecimal(p.discount, 1, 2) + '%'}"></td>
+                <td>
+                    <span th:text="${p.startDate}"></span>
+                    <span> a </span>
+                    <span th:text="${p.endDate}"></span>
+                </td>
+                <td>
+                    <div class="actions">
+                        <a class="btn btn-secondary btn-small" th:href="@{/receptionist/promotions/{id}/edit(id=${p.promotionId})}">Editar</a>
+                        <form th:action="@{/receptionist/promotions/{id}/delete(id=${p.promotionId})}" method="post"
+                              onsubmit="return confirm('Seguro que deseas eliminar esta promocion?');">
+                            <button class="btn btn-danger btn-small" type="submit">Eliminar</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

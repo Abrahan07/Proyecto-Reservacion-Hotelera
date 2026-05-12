@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Staytic - Usuario</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Arial, sans-serif; background: #f4f4f4; color: #222; }
+        header { background: #8B2E2E; color: white; padding: 14px 22px; display: flex; justify-content: space-between; gap: 16px; align-items: center; }
+        header a { color: white; text-decoration: none; font-weight: 600; }
+        main { max-width: 720px; margin: 26px auto; padding: 0 16px; }
+        h1 { margin: 0 0 18px; color: #8B2E2E; font-size: 28px; }
+        .panel { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 18px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .field-full { grid-column: 1 / -1; }
+        label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #bbb; border-radius: 6px; }
+        .check-row { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+        .check-row input { width: auto; }
+        .error { display: block; color: #b3261e; font-size: 13px; margin-top: 4px; }
+        .actions { display: flex; gap: 10px; margin-top: 18px; }
+        .btn { border: 0; border-radius: 7px; padding: 10px 14px; cursor: pointer; text-decoration: none; display: inline-block; font-weight: 600; }
+        .btn-primary { background: #8B2E2E; color: white; }
+        .btn-secondary { background: #555; color: white; }
+        .hint { color: #666; font-size: 13px; margin-top: 5px; }
+        @media (max-width: 700px) {
+            header { align-items: stretch; flex-direction: column; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <strong>Staytic - Administracion</strong>
+    <a th:href="@{/admin/users}">Volver a usuarios</a>
+</header>
+
+<main>
+    <h1 th:text="${editing} ? 'Editar usuario' : 'Nuevo usuario'"></h1>
+
+    <section class="panel">
+        <form th:object="${userForm}"
+              th:action="${editing} ? @{/admin/users/{id}(id=${userForm.userId})} : @{/admin/users}"
+              method="post">
+            <div class="grid">
+                <div>
+                    <label for="name">Nombre</label>
+                    <input id="name" type="text" th:field="*{name}" required>
+                    <span class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+                </div>
+
+                <div>
+                    <label for="email">Email</label>
+                    <input id="email" type="email" th:field="*{email}" required>
+                    <span class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+                </div>
+
+                <div>
+                    <label for="phone">Telefono</label>
+                    <input id="phone" type="text" th:field="*{phone}">
+                    <span class="error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></span>
+                </div>
+
+                <div>
+                    <label for="role">Rol</label>
+                    <select id="role" th:field="*{role}" required>
+                        <option value="">Seleccione un rol</option>
+                        <option th:each="r : ${roles}" th:value="${r}" th:text="${r}"></option>
+                    </select>
+                    <span class="error" th:if="${#fields.hasErrors('role')}" th:errors="*{role}"></span>
+                </div>
+
+                <div class="field-full">
+                    <label for="password">Contraseña</label>
+                    <input id="password" type="password" th:field="*{password}"
+                           th:required="${!editing}">
+                    <p class="hint" th:if="${editing}">Dejala vacia si no deseas cambiarla.</p>
+                    <span class="error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+                </div>
+
+                <div class="field-full">
+                    <label class="check-row">
+                        <input type="checkbox" th:field="*{active}">
+                        Usuario activo
+                    </label>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="btn btn-primary" type="submit">Guardar</button>
+                <a class="btn btn-secondary" th:href="@{/admin/users}">Cancelar</a>
+            </div>
+        </form>
+    </section>
+</main>
+</body>
+</html>

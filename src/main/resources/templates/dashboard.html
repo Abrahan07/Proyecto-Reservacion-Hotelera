@@ -207,9 +207,45 @@
         </a>
 
         <a sec:authorize="hasAnyRole('ADMIN','RECEPTIONIST')"
-           th:href="@{/receptionist}" class="action-card">
+           th:href="@{/receptionist/rooms}" class="action-card">
             <div class="icon">🏨</div>
+            <h3>Habitaciones</h3>
+        </a>
+
+        <a sec:authorize="hasAnyRole('ADMIN','RECEPTIONIST')"
+           th:href="@{/receptionist/reservations}" class="action-card">
+            <div class="icon">📅</div>
             <h3>Reservaciones</h3>
+        </a>
+
+        <a sec:authorize="hasAnyRole('ADMIN','RECEPTIONIST')"
+           th:href="@{/receptionist/checkins}" class="action-card">
+            <div class="icon">✅</div>
+            <h3>Check-in</h3>
+        </a>
+
+        <a sec:authorize="hasAnyRole('ADMIN','RECEPTIONIST')"
+           th:href="@{/receptionist/checkouts}" class="action-card">
+            <div class="icon">↗</div>
+            <h3>Check-out</h3>
+        </a>
+
+        <a sec:authorize="hasAnyRole('ADMIN','RECEPTIONIST')"
+           th:href="@{/receptionist/payments}" class="action-card">
+            <div class="icon">$</div>
+            <h3>Pagos</h3>
+        </a>
+
+        <a sec:authorize="hasAnyRole('ADMIN','RECEPTIONIST')"
+           th:href="@{/receptionist/promotions}" class="action-card">
+            <div class="icon">%</div>
+            <h3>Promociones</h3>
+        </a>
+
+        <a sec:authorize="hasAnyRole('ADMIN','RECEPTIONIST')"
+           th:href="@{/receptionist/services}" class="action-card">
+            <div class="icon">+</div>
+            <h3>Servicios</h3>
         </a>
 
         <a th:href="@{/dashboard}" class="action-card">

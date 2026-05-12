@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Staytic - Reservacion</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Arial, sans-serif; background: #f4f4f4; color: #222; }
+        header { background: #8B2E2E; color: white; padding: 14px 22px; display: flex; justify-content: space-between; gap: 16px; align-items: center; }
+        header a { color: white; text-decoration: none; font-weight: 600; }
+        main { max-width: 820px; margin: 26px auto; padding: 0 16px; }
+        h1 { margin: 0 0 18px; color: #8B2E2E; font-size: 28px; }
+        .panel { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 18px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .field-full { grid-column: 1 / -1; }
+        label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 5px; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #bbb; border-radius: 6px; font-family: Arial, sans-serif; }
+        select[multiple] { min-height: 150px; }
+        textarea { min-height: 95px; resize: vertical; }
+        .error { display: block; color: #b3261e; font-size: 13px; margin-top: 4px; }
+        .global-error { background: #fdecea; color: #b3261e; padding: 10px 12px; border-radius: 7px; margin-bottom: 14px; }
+        .actions { display: flex; gap: 10px; margin-top: 18px; }
+        .btn { border: 0; border-radius: 7px; padding: 10px 14px; cursor: pointer; text-decoration: none; display: inline-block; font-weight: 600; }
+        .btn-primary { background: #8B2E2E; color: white; }
+        .btn-secondary { background: #555; color: white; }
+        .hint { color: #666; font-size: 13px; margin-top: 5px; }
+        @media (max-width: 760px) {
+            header { align-items: stretch; flex-direction: column; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <strong>Staytic - Reservaciones</strong>
+    <a th:href="@{/receptionist/reservations}">Volver a reservaciones</a>
+</header>
+
+<main>
+    <h1 th:text="${editing} ? 'Editar reservacion' : 'Nueva reservacion'"></h1>
+
+    <section class="panel">
+        <div th:if="${#fields.hasGlobalErrors()}" class="global-error">
+            <div th:each="err : ${#fields.globalErrors()}" th:text="${err}"></div>
+        </div>
+
+        <form th:object="${reservationForm}"
+              th:action="${editing} ? @{/receptionist/reservations/{id}(id=${reservationForm.reservationId})} : @{/receptionist/reservations}"
+              method="post">
+            <div class="grid">
+                <div class="field-full">
+                    <label for="userId">Usuario</label>
+                    <select id="userId" th:field="*{userId}" required>
+                        <option value="">Seleccione un usuario</option>
+                        <option th:each="u : ${users}" th:value="${u.userId}"
+                                th:text="${u.name + ' - ' + u.email}"></option>
+                    </select>
+                    <span class="error" th:if="${#fields.hasErrors('userId')}" th:errors="*{userId}"></span>
+                </div>
+
+                <div class="field-full">
+                    <label for="roomIds">Habitaciones</label>
+                    <select id="roomIds" th:field="*{roomIds}" multiple required>
+                        <option th:each="r : ${rooms}" th:value="${r.roomId}"
+                                th:text="${r.number + ' - Piso ' + r.floor + ' - ' + r.type + ' - ' + r.status}"></option>
+                    </select>
+                    <p class="hint">Mantén presionada Ctrl para seleccionar varias habitaciones.</p>
+                    <span class="error" th:if="${#fields.hasErrors('roomIds')}" th:errors="*{roomIds}"></span>
+                </div>
+
+                <div>
+                    <label for="checkIn">Fecha de entrada</label>
+                    <input id="checkIn" type="date" th:field="*{checkIn}" required>
+                    <span class="error" th:if="${#fields.hasErrors('checkIn')}" th:errors="*{checkIn}"></span>
+                </div>
+
+                <div>
+                    <label for="checkOut">Fecha de salida</label>
+                    <input id="checkOut" type="date" th:field="*{checkOut}" required>
+                    <span class="error" th:if="${#fields.hasErrors('checkOut')}" th:errors="*{checkOut}"></span>
+                </div>
+
+                <div>
+                    <label for="totalGuests">Total de huespedes</label>
+                    <input id="totalGuests" type="number" min="1" th:field="*{totalGuests}" required>
+                    <span class="error" th:if="${#fields.hasErrors('totalGuests')}" th:errors="*{totalGuests}"></span>
+                </div>
+
+                <div>
+                    <label for="status">Estado</label>
+                    <select id="status" th:field="*{status}">
+                        <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}"></option>
+                    </select>
+                </div>
+
+                <div class="field-full">
+                    <label for="promotionCode">Codigo de promocion</label>
+                    <input id="promotionCode" type="text" th:field="*{promotionCode}" placeholder="Opcional">
+                    <span class="error" th:if="${#fields.hasErrors('promotionCode')}" th:errors="*{promotionCode}"></span>
+                </div>
+
+                <div class="field-full">
+                    <label for="notes">Notas</label>
+                    <textarea id="notes" th:field="*{notes}"></textarea>
+                    <span class="error" th:if="${#fields.hasErrors('notes')}" th:errors="*{notes}"></span>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="btn btn-primary" type="submit">Guardar</button>
+                <a class="btn btn-secondary" th:href="@{/receptionist/reservations}">Cancelar</a>
+            </div>
+        </form>
+    </section>
+</main>
+</body>
+</html>

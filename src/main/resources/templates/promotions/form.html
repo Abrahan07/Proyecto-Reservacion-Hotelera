@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Staytic - Promocion</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Arial, sans-serif; background: #f4f4f4; color: #222; }
+        header { background: #8B2E2E; color: white; padding: 14px 22px; display: flex; justify-content: space-between; gap: 16px; align-items: center; }
+        header a { color: white; text-decoration: none; font-weight: 600; }
+        main { max-width: 740px; margin: 26px auto; padding: 0 16px; }
+        h1 { margin: 0 0 18px; color: #8B2E2E; font-size: 28px; }
+        .panel { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 18px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .field-full { grid-column: 1 / -1; }
+        label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 5px; }
+        input, textarea { width: 100%; padding: 10px; border: 1px solid #bbb; border-radius: 6px; font-family: Arial, sans-serif; }
+        textarea { min-height: 90px; resize: vertical; }
+        .error { display: block; color: #b3261e; font-size: 13px; margin-top: 4px; }
+        .global-error { background: #fdecea; color: #b3261e; padding: 10px 12px; border-radius: 7px; margin-bottom: 14px; }
+        .actions { display: flex; gap: 10px; margin-top: 18px; }
+        .btn { border: 0; border-radius: 7px; padding: 10px 14px; cursor: pointer; text-decoration: none; display: inline-block; font-weight: 600; }
+        .btn-primary { background: #8B2E2E; color: white; }
+        .btn-secondary { background: #555; color: white; }
+        @media (max-width: 700px) {
+            header { align-items: stretch; flex-direction: column; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <strong>Staytic - Promociones</strong>
+    <a th:href="@{/receptionist/promotions}">Volver a promociones</a>
+</header>
+
+<main>
+    <h1 th:text="${editing} ? 'Editar promocion' : 'Nueva promocion'"></h1>
+
+    <section class="panel">
+        <div th:if="${#fields.hasGlobalErrors()}" class="global-error">
+            <div th:each="err : ${#fields.globalErrors()}" th:text="${err}"></div>
+        </div>
+
+        <form th:object="${promotion}"
+              th:action="${editing} ? @{/receptionist/promotions/{id}(id=${promotion.promotionId})} : @{/receptionist/promotions}"
+              method="post">
+            <div class="grid">
+                <div>
+                    <label for="code">Codigo</label>
+                    <input id="code" type="text" th:field="*{code}" required>
+                    <span class="error" th:if="${#fields.hasErrors('code')}" th:errors="*{code}"></span>
+                </div>
+
+                <div>
+                    <label for="discount">Porcentaje de descuento</label>
+                    <input id="discount" type="number" min="0" max="100" step="0.01" th:field="*{discount}" required>
+                    <span class="error" th:if="${#fields.hasErrors('discount')}" th:errors="*{discount}"></span>
+                </div>
+
+                <div>
+                    <label for="startDate">Fecha inicial</label>
+                    <input id="startDate" type="date" th:field="*{startDate}" required>
+                    <span class="error" th:if="${#fields.hasErrors('startDate')}" th:errors="*{startDate}"></span>
+                </div>
+
+                <div>
+                    <label for="endDate">Fecha final</label>
+                    <input id="endDate" type="date" th:field="*{endDate}" required>
+                    <span class="error" th:if="${#fields.hasErrors('endDate')}" th:errors="*{endDate}"></span>
+                </div>
+
+                <div class="field-full">
+                    <label for="description">Descripcion</label>
+                    <textarea id="description" th:field="*{description}"></textarea>
+                    <span class="error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></span>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="btn btn-primary" type="submit">Guardar</button>
+                <a class="btn btn-secondary" th:href="@{/receptionist/promotions}">Cancelar</a>
+            </div>
+        </form>
+    </section>
+</main>
+</body>
+</html>

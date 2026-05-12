@@ -1,62 +1,86 @@
 package com.universidad.staytic.model;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+
+@Entity
+@Table(name = "detalle_reservaciones")
 public class ReservationDetail {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int detailId;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "reservation_id")
+    private Reservation reservation;
+
+    @NotNull(message = "La habitacion es obligatoria")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "room_id")
     private Room room;
-    private Date scheduledCheckIn;
-    private Date scheduledCheckOut;
+
+    @NotNull(message = "La fecha de entrada es obligatoria")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Column(nullable = false)
+    private LocalDate scheduledCheckIn;
+
+    @NotNull(message = "La fecha de salida es obligatoria")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Column(nullable = false)
+    private LocalDate scheduledCheckOut;
+
+    @Column(nullable = false)
     private int nightCount;
+
+    @Column(nullable = false)
     private float subtotal;
-    private List<User> guests;
 
     public ReservationDetail() {
-        this.guests = new ArrayList<>();
     }
 
-    public ReservationDetail(int detailId, Room room, Date scheduledCheckIn,
-                          Date scheduledCheckOut, int nightCount, float subtotal) {
+    public ReservationDetail(int detailId, Room room, LocalDate scheduledCheckIn,
+                          LocalDate scheduledCheckOut, int nightCount, float subtotal) {
         this.detailId = detailId;
         this.room = room;
         this.scheduledCheckIn = scheduledCheckIn;
         this.scheduledCheckOut = scheduledCheckOut;
         this.nightCount = nightCount;
         this.subtotal = subtotal;
-        this.guests = new ArrayList<>();
     }
 
-    // detailId: solo get
     public int getDetailId() { return detailId; }
+    public void setDetailId(int detailId) { this.detailId = detailId; }
+
+    public Reservation getReservation() { return reservation; }
+    public void setReservation(Reservation reservation) { this.reservation = reservation; }
 
     public Room getRoom() { return room; }
     public void setRoom(Room room) { this.room = room; }
 
-    public Date getScheduledCheckIn() { return scheduledCheckIn; }
-    public void setScheduledCheckIn(Date scheduledCheckIn) { this.scheduledCheckIn = scheduledCheckIn; }
+    public LocalDate getScheduledCheckIn() { return scheduledCheckIn; }
+    public void setScheduledCheckIn(LocalDate scheduledCheckIn) { this.scheduledCheckIn = scheduledCheckIn; }
 
-    public Date getScheduledCheckOut() { return scheduledCheckOut; }
-    public void setScheduledCheckOut(Date scheduledCheckOut) { this.scheduledCheckOut = scheduledCheckOut; }
+    public LocalDate getScheduledCheckOut() { return scheduledCheckOut; }
+    public void setScheduledCheckOut(LocalDate scheduledCheckOut) { this.scheduledCheckOut = scheduledCheckOut; }
 
-    // nightCount: solo get, se calcula a partir de las fechas
     public int getNightCount() { return nightCount; }
+    public void setNightCount(int nightCount) { this.nightCount = nightCount; }
 
-    // subtotal: solo get, se calcula con calculateSubtotal()
     public float getSubtotal() { return subtotal; }
+    public void setSubtotal(float subtotal) { this.subtotal = subtotal; }
 
-    public List<User> getGuests() { return guests; }
-    public void setGuests(List<User> guests) { this.guests = guests; }
-
-    public void addGuest(User guest) {
-        if (!this.guests.contains(guest)) {
-            this.guests.add(guest);
+    public void calculateSubtotal() {
+        if (scheduledCheckIn == null || scheduledCheckOut == null || room == null) {
+            this.nightCount = 0;
+            this.subtotal = 0;
+            return;
         }
-    }
-
-    public void removeGuest(User guest) {
-        this.guests.remove(guest);
+        this.nightCount = (int) ChronoUnit.DAYS.between(scheduledCheckIn, scheduledCheckOut);
+        this.subtotal = this.nightCount * room.getPricePerNight();
     }
 
     @Override
@@ -64,8 +88,7 @@ public class ReservationDetail {
         return "DetalleReserva{detailId=" + detailId + ", room=" + room +
                 ", scheduledCheckIn=" + scheduledCheckIn +
                 ", scheduledCheckOut=" + scheduledCheckOut +
-                ", nightCount=" + nightCount + ", subtotal=" + subtotal +
-                ", guests=" + guests.size() + "}";
+                ", nightCount=" + nightCount + ", subtotal=" + subtotal + "}";
     }
 
     @Override

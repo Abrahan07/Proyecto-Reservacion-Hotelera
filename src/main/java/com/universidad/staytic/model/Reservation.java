@@ -1,32 +1,74 @@
 package com.universidad.staytic.model;
 
-import java.util.Date;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = "reservaciones")
 public class Reservation {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int reservationId;
+
+    @NotNull(message = "El usuario es obligatorio")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id")
     private User user;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
     private ReservationStatus status;
-    private Date createdAt;
+
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
+
+    @Min(value = 1, message = "Debe haber al menos un huesped")
+    @Column(nullable = false)
     private int totalGuests;
+
+    @Size(max = 500, message = "Las notas no pueden superar 500 caracteres")
+    @Column(length = 500)
     private String notes;
+
+    @ManyToOne
+    @JoinColumn(name = "promotion_id")
     private Promotion promotion;
 
-    // Absorbidos de CheckIn
-    private Date checkInDateTime;
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    private LocalDateTime checkInDateTime;
+
+    @ManyToOne
+    @JoinColumn(name = "employee_check_in_id")
     private User employeeCheckIn;
 
-    // Absorbidos de CheckOut
-    private Date checkOutDateTime;
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    private LocalDateTime checkOutDateTime;
+
+    @ManyToOne
+    @JoinColumn(name = "employee_check_out_id")
     private User employeeCheckOut;
+
     private float additionalCharges;
     private float penalty;
+
+    @Transient
     private Invoice invoice;
+
+    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReservationDetail> details = new ArrayList<>();
 
     public Reservation() {
     }
 
-    public Reservation(Invoice invoice, float penalty, float additionalCharges, User employeeCheckOut, Date checkOutDateTime, User employeeCheckIn, Date checkInDateTime, Promotion promotion, String notes, int totalGuests, Date createdAt, ReservationStatus status, User user, int reservationId) {
+    public Reservation(Invoice invoice, float penalty, float additionalCharges, User employeeCheckOut, LocalDateTime checkOutDateTime, User employeeCheckIn, LocalDateTime checkInDateTime, Promotion promotion, String notes, int totalGuests, LocalDateTime createdAt, ReservationStatus status, User user, int reservationId) {
         this.invoice = invoice;
         this.penalty = penalty;
         this.additionalCharges = additionalCharges;
@@ -67,11 +109,11 @@ public class Reservation {
         this.status = status;
     }
 
-    public Date getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -99,11 +141,11 @@ public class Reservation {
         this.promotion = promotion;
     }
 
-    public Date getCheckInDateTime() {
+    public LocalDateTime getCheckInDateTime() {
         return checkInDateTime;
     }
 
-    public void setCheckInDateTime(Date checkInDateTime) {
+    public void setCheckInDateTime(LocalDateTime checkInDateTime) {
         this.checkInDateTime = checkInDateTime;
     }
 
@@ -115,11 +157,11 @@ public class Reservation {
         this.employeeCheckIn = employeeCheckIn;
     }
 
-    public Date getCheckOutDateTime() {
+    public LocalDateTime getCheckOutDateTime() {
         return checkOutDateTime;
     }
 
-    public void setCheckOutDateTime(Date checkOutDateTime) {
+    public void setCheckOutDateTime(LocalDateTime checkOutDateTime) {
         this.checkOutDateTime = checkOutDateTime;
     }
 
@@ -153,6 +195,23 @@ public class Reservation {
 
     public void setInvoice(Invoice invoice) {
         this.invoice = invoice;
+    }
+
+    public List<ReservationDetail> getDetails() {
+        return details;
+    }
+
+    public void setDetails(List<ReservationDetail> details) {
+        this.details = details;
+    }
+
+    public void addDetail(ReservationDetail detail) {
+        detail.setReservation(this);
+        this.details.add(detail);
+    }
+
+    public void clearDetails() {
+        this.details.clear();
     }
 
     @Override

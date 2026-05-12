@@ -60,12 +60,6 @@ public class AuthController {
         return "dashboard";
     }
 
-    @GetMapping("/admin")
-    public String adminPanel(Model model) {
-        model.addAttribute("users", service.findAll());
-        return "admin/panel";
-    }
-
     @GetMapping("/error/403")
     public String accessDenied() {
         return "error/403";

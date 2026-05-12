@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Staytic - Habitacion</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Arial, sans-serif; background: #f4f4f4; color: #222; }
+        header { background: #8B2E2E; color: white; padding: 14px 22px; display: flex; justify-content: space-between; gap: 16px; align-items: center; }
+        header a { color: white; text-decoration: none; font-weight: 600; }
+        main { max-width: 760px; margin: 26px auto; padding: 0 16px; }
+        h1 { margin: 0 0 18px; color: #8B2E2E; font-size: 28px; }
+        .panel { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 18px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .field-full { grid-column: 1 / -1; }
+        label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 5px; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #bbb; border-radius: 6px; font-family: Arial, sans-serif; }
+        textarea { min-height: 95px; resize: vertical; }
+        .error { display: block; color: #b3261e; font-size: 13px; margin-top: 4px; }
+        .actions { display: flex; gap: 10px; margin-top: 18px; }
+        .btn { border: 0; border-radius: 7px; padding: 10px 14px; cursor: pointer; text-decoration: none; display: inline-block; font-weight: 600; }
+        .btn-primary { background: #8B2E2E; color: white; }
+        .btn-secondary { background: #555; color: white; }
+        @media (max-width: 700px) {
+            header { align-items: stretch; flex-direction: column; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <strong>Staytic - Recepcion</strong>
+    <a th:href="@{/receptionist/rooms}">Volver a habitaciones</a>
+</header>
+
+<main>
+    <h1 th:text="${editing} ? 'Editar habitacion' : 'Nueva habitacion'"></h1>
+
+    <section class="panel">
+        <form th:object="${room}"
+              th:action="${editing} ? @{/receptionist/rooms/{id}(id=${room.roomId})} : @{/receptionist/rooms}"
+              method="post">
+            <div class="grid">
+                <div>
+                    <label for="number">Numero</label>
+                    <input id="number" type="text" th:field="*{number}" required>
+                    <span class="error" th:if="${#fields.hasErrors('number')}" th:errors="*{number}"></span>
+                </div>
+
+                <div>
+                    <label for="floor">Piso</label>
+                    <input id="floor" type="number" min="1" th:field="*{floor}" required>
+                    <span class="error" th:if="${#fields.hasErrors('floor')}" th:errors="*{floor}"></span>
+                </div>
+
+                <div>
+                    <label for="type">Tipo</label>
+                    <select id="type" th:field="*{type}" required>
+                        <option value="">Seleccione un tipo</option>
+                        <option th:each="t : ${roomTypes}" th:value="${t}" th:text="${t}"></option>
+                    </select>
+                    <span class="error" th:if="${#fields.hasErrors('type')}" th:errors="*{type}"></span>
+                </div>
+
+                <div>
+                    <label for="pricePerNight">Precio por noche</label>
+                    <input id="pricePerNight" type="number" min="0" step="0.01" th:field="*{pricePerNight}" required>
+                    <span class="error" th:if="${#fields.hasErrors('pricePerNight')}" th:errors="*{pricePerNight}"></span>
+                </div>
+
+                <div class="field-full">
+                    <label for="status">Estado</label>
+                    <select id="status" th:field="*{status}" required>
+                        <option th:each="s : ${roomStatuses}" th:value="${s}" th:text="${s}"></option>
+                    </select>
+                    <span class="error" th:if="${#fields.hasErrors('status')}" th:errors="*{status}"></span>
+                </div>
+
+                <div class="field-full">
+                    <label for="description">Descripcion</label>
+                    <textarea id="description" th:field="*{description}"></textarea>
+                    <span class="error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></span>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="btn btn-primary" type="submit">Guardar</button>
+                <a class="btn btn-secondary" th:href="@{/receptionist/rooms}">Cancelar</a>
+            </div>
+        </form>
+    </section>
+</main>
+</body>
+</html>

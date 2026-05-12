@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Staytic - Pago</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Arial, sans-serif; background: #f4f4f4; color: #222; }
+        header { background: #8B2E2E; color: white; padding: 14px 22px; display: flex; justify-content: space-between; gap: 16px; align-items: center; }
+        header a { color: white; text-decoration: none; font-weight: 600; }
+        main { max-width: 760px; margin: 26px auto; padding: 0 16px; }
+        h1 { margin: 0 0 18px; color: #8B2E2E; font-size: 28px; }
+        .panel { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 18px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .field-full { grid-column: 1 / -1; }
+        label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #bbb; border-radius: 6px; }
+        .error { display: block; color: #b3261e; font-size: 13px; margin-top: 4px; }
+        .global-error { background: #fdecea; color: #b3261e; padding: 10px 12px; border-radius: 7px; margin-bottom: 14px; }
+        .actions { display: flex; gap: 10px; margin-top: 18px; }
+        .btn { border: 0; border-radius: 7px; padding: 10px 14px; cursor: pointer; text-decoration: none; display: inline-block; font-weight: 600; }
+        .btn-primary { background: #8B2E2E; color: white; }
+        .btn-secondary { background: #555; color: white; }
+        @media (max-width: 700px) {
+            header { align-items: stretch; flex-direction: column; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <strong>Staytic - Pagos</strong>
+    <a th:href="@{/receptionist/payments}">Volver a pagos</a>
+</header>
+
+<main>
+    <h1 th:text="${editing} ? 'Editar pago' : 'Nuevo pago'"></h1>
+
+    <section class="panel">
+        <div th:if="${#fields.hasGlobalErrors()}" class="global-error">
+            <div th:each="err : ${#fields.globalErrors()}" th:text="${err}"></div>
+        </div>
+
+        <form th:object="${payment}"
+              th:action="${editing} ? @{/receptionist/payments/{id}(id=${payment.paymentId})} : @{/receptionist/payments}"
+              method="post">
+            <div class="grid">
+                <div class="field-full">
+                    <label for="reservationId">Reservacion</label>
+                    <select id="reservationId" name="reservationId" required>
+                        <option value="">Seleccione una reservacion</option>
+                        <option th:each="r : ${reservations}" th:value="${r.reservationId}"
+                                th:text="${'#' + r.reservationId + ' - ' + r.user.name + ' - ' + r.status}"
+                                th:selected="${reservationId != null and reservationId == r.reservationId}"></option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="amount">Monto</label>
+                    <input id="amount" type="number" min="0" step="0.01" th:field="*{amount}" required>
+                    <span class="error" th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}"></span>
+                </div>
+
+                <div>
+                    <label for="paymentMethod">Metodo de pago</label>
+                    <select id="paymentMethod" th:field="*{paymentMethod}" required>
+                        <option value="">Seleccione un metodo</option>
+                        <option th:each="m : ${methods}" th:value="${m}" th:text="${m}"></option>
+                    </select>
+                    <span class="error" th:if="${#fields.hasErrors('paymentMethod')}" th:errors="*{paymentMethod}"></span>
+                </div>
+
+                <div>
+                    <label for="paymentDate">Fecha</label>
+                    <input id="paymentDate" type="date" th:field="*{paymentDate}" required>
+                    <span class="error" th:if="${#fields.hasErrors('paymentDate')}" th:errors="*{paymentDate}"></span>
+                </div>
+
+                <div>
+                    <label for="status">Estado</label>
+                    <input id="status" type="text" th:field="*{status}" required>
+                    <span class="error" th:if="${#fields.hasErrors('status')}" th:errors="*{status}"></span>
+                </div>
+
+                <div class="field-full">
+                    <label for="reference">Referencia</label>
+                    <input id="reference" type="text" th:field="*{reference}">
+                    <span class="error" th:if="${#fields.hasErrors('reference')}" th:errors="*{reference}"></span>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="btn btn-primary" type="submit">Guardar</button>
+                <a class="btn btn-secondary" th:href="@{/receptionist/payments}">Cancelar</a>
+            </div>
+        </form>
+    </section>
+</main>
+</body>
+</html>
