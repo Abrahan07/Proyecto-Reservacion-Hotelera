@@ -214,6 +214,126 @@ public class Reservation {
         this.details.clear();
     }
 
+    public boolean confirm() {
+        if (this.status == ReservationStatus.CANCELLED || this.status == ReservationStatus.FINISHED) {
+            return false;
+        }
+        this.status = ReservationStatus.CONFIRMED;
+        return true;
+    }
+
+    public void cancel() {
+        this.status = ReservationStatus.CANCELLED;
+        for (ReservationDetail detail : this.details) {
+            if (detail != null && detail.getRoom() != null) {
+                detail.getRoom().setStatus(RoomStatus.AVAILABLE);
+            }
+        }
+    }
+
+    public float calculateTotal() {
+        float subtotal = 0;
+        for (ReservationDetail detail : this.details) {
+            subtotal += detail.calculateSubtotal();
+        }
+        return subtotal - applyPromotion() + calculateCharges();
+    }
+
+    public float applyPromotion() {
+        if (promotion == null) {
+            return 0;
+        }
+        float subtotal = 0;
+        for (ReservationDetail detail : this.details) {
+            subtotal += detail.getSubtotal();
+        }
+        return subtotal * (promotion.getDiscount() / 100);
+    }
+
+    protected void generateNotification() {
+        // Las notificaciones persistentes se generan desde NotificationService.
+    }
+
+    public void checkIn(User employee, LocalDateTime realCheckInDateTime) {
+        if (employee == null) {
+            throw new RuntimeException("Empleado de check-in es obligatorio");
+        }
+        if (realCheckInDateTime == null) {
+            throw new RuntimeException("Fecha/hora real de check-in es obligatoria");
+        }
+
+        this.checkInDateTime = realCheckInDateTime;
+        this.employeeCheckIn = employee;
+        this.status = ReservationStatus.ACTIVE;
+
+        for (ReservationDetail detail : this.details) {
+            if (detail != null && detail.getRoom() != null) {
+                detail.getRoom().setStatus(RoomStatus.OCCUPIED);
+            }
+        }
+    }
+
+    public void checkIn() {
+        this.checkInDateTime = LocalDateTime.now();
+        this.status = ReservationStatus.ACTIVE;
+        for (ReservationDetail detail : this.details) {
+            if (detail != null && detail.getRoom() != null) {
+                detail.getRoom().setStatus(RoomStatus.OCCUPIED);
+            }
+        }
+    }
+
+    public void checkOut(User employee, LocalDateTime realCheckOutDateTime, float additionalCharges, float penalty) {
+        if (employee == null) {
+            throw new RuntimeException("Empleado de check-out es obligatorio");
+        }
+        if (realCheckOutDateTime == null) {
+            throw new RuntimeException("Fecha/hora real de check-out es obligatoria");
+        }
+        if (this.checkInDateTime == null) {
+            throw new RuntimeException("No se puede registrar check-out sin check-in previo");
+        }
+
+        this.checkOutDateTime = realCheckOutDateTime;
+        this.additionalCharges = additionalCharges;
+        this.penalty = penalty;
+        this.employeeCheckOut = employee;
+        this.status = ReservationStatus.FINISHED;
+
+        for (ReservationDetail detail : this.details) {
+            if (detail != null && detail.getRoom() != null) {
+                detail.getRoom().setStatus(RoomStatus.AVAILABLE);
+            }
+        }
+    }
+
+    public void checkOut() {
+        if (this.checkInDateTime == null) {
+            throw new RuntimeException("No se puede registrar check-out sin check-in previo");
+        }
+        this.checkOutDateTime = LocalDateTime.now();
+        this.status = ReservationStatus.FINISHED;
+        for (ReservationDetail detail : this.details) {
+            if (detail != null && detail.getRoom() != null) {
+                detail.getRoom().setStatus(RoomStatus.AVAILABLE);
+            }
+        }
+    }
+
+    public float calculateCharges() {
+        return additionalCharges + penalty;
+    }
+
+    public Invoice generateInvoice() {
+        float subtotal = 0;
+        for (ReservationDetail detail : this.details) {
+            subtotal += detail.calculateSubtotal();
+        }
+        float total = calculateTotal();
+        float taxes = total * 0.19f;
+        return new Invoice(0, this, null, subtotal, taxes, total + taxes, LocalDateTime.now());
+    }
+
     @Override
     public String toString() {
         return "Reservation{" +

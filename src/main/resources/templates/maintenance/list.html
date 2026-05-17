@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Staytic - Mantenimiento</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Arial, sans-serif; background: #f4f4f4; color: #222; }
+        header { background: #8B2E2E; color: white; padding: 14px 22px; display: flex; justify-content: space-between; gap: 16px; align-items: center; }
+        header a { color: white; text-decoration: none; font-weight: 600; margin-left: 14px; }
+        main { max-width: 1220px; margin: 26px auto; padding: 0 16px; }
+        .topbar { display: flex; justify-content: space-between; gap: 16px; align-items: center; margin-bottom: 18px; }
+        h1 { margin: 0; color: #8B2E2E; font-size: 28px; }
+        .btn { border: 0; border-radius: 7px; padding: 10px 14px; cursor: pointer; text-decoration: none; display: inline-block; font-weight: 600; }
+        .btn-primary { background: #8B2E2E; color: white; }
+        .btn-secondary { background: #555; color: white; }
+        .btn-danger { background: #b3261e; color: white; }
+        .btn-small { padding: 7px 10px; font-size: 13px; }
+        .panel { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 18px; }
+        .filters { display: grid; grid-template-columns: repeat(6, minmax(120px, 1fr)); gap: 12px; align-items: end; }
+        label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 9px 10px; border: 1px solid #bbb; border-radius: 6px; }
+        .alert { padding: 10px 12px; border-radius: 7px; margin-bottom: 14px; background: #e8f5e9; color: #1b5e20; }
+        .table-wrap { overflow-x: auto; background: white; border: 1px solid #ddd; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; min-width: 1050px; }
+        th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; vertical-align: top; }
+        th { background: #8B2E2E; color: white; font-size: 13px; text-transform: uppercase; }
+        .actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .badge { padding: 4px 9px; border-radius: 999px; font-size: 12px; font-weight: 700; background: #eee; display: inline-block; }
+        .muted { color: #666; font-size: 13px; }
+        @media (max-width: 900px) {
+            header, .topbar { align-items: stretch; flex-direction: column; }
+            .filters { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <strong>Staytic - Mantenimiento</strong>
+    <nav>
+        <a th:href="@{/dashboard}">Dashboard</a>
+        <a th:href="@{/receptionist/rooms}">Habitaciones</a>
+    </nav>
+</header>
+
+<main>
+    <div class="topbar">
+        <h1>Mantenimiento y reportes</h1>
+        <div>
+            <a class="btn btn-secondary" th:href="@{/receptionist/maintenance/report}">Reportar problema</a>
+            <a class="btn btn-primary" th:href="@{/receptionist/maintenance/new}">Programar tarea</a>
+        </div>
+    </div>
+
+    <div th:if="${success}" class="alert" th:text="${success}"></div>
+
+    <section class="panel">
+        <form class="filters" th:action="@{/receptionist/maintenance}" method="get">
+            <div>
+                <label for="roomText">Habitacion</label>
+                <input id="roomText" name="roomText" type="text" th:value="${roomText}" placeholder="101">
+            </div>
+            <div>
+                <label for="type">Tipo</label>
+                <input id="type" name="type" type="text" th:value="${type}" placeholder="Limpieza, problema...">
+            </div>
+            <div>
+                <label for="status">Estado</label>
+                <select id="status" name="status">
+                    <option value="">Todos</option>
+                    <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}"
+                            th:selected="${selectedStatus != null and selectedStatus == s}"></option>
+                </select>
+            </div>
+            <div>
+                <label for="fromDate">Desde</label>
+                <input id="fromDate" name="fromDate" type="date" th:value="${fromDate}">
+            </div>
+            <div>
+                <label for="toDate">Hasta</label>
+                <input id="toDate" name="toDate" type="date" th:value="${toDate}">
+            </div>
+            <div>
+                <button class="btn btn-primary" type="submit">Buscar</button>
+                <a class="btn btn-secondary" th:href="@{/receptionist/maintenance}">Limpiar</a>
+            </div>
+        </form>
+    </section>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Habitacion</th>
+                <th>Tipo</th>
+                <th>Descripcion</th>
+                <th>Programada</th>
+                <th>Finalizada</th>
+                <th>Empleado</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${#lists.isEmpty(items)}">
+                <td colspan="9">No hay tareas o reportes con esos filtros.</td>
+            </tr>
+            <tr th:each="m : ${items}">
+                <td th:text="${m.maintenanceId}"></td>
+                <td th:text="${m.room.number}"></td>
+                <td th:text="${m.type}"></td>
+                <td th:text="${m.description}"></td>
+                <td th:text="${#temporals.format(m.scheduledDate, 'yyyy-MM-dd HH:mm')}"></td>
+                <td th:text="${m.completedDate == null ? '-' : #temporals.format(m.completedDate, 'yyyy-MM-dd HH:mm')}"></td>
+                <td>
+                    <span th:text="${m.employee == null ? '-' : m.employee.name}"></span><br>
+                    <span class="muted" th:text="${m.employee == null ? '' : m.employee.email}"></span>
+                </td>
+                <td><span class="badge" th:text="${m.status}"></span></td>
+                <td>
+                    <div class="actions">
+                        <form th:if="${m.status.name() != 'COMPLETED'}" th:action="@{/receptionist/maintenance/{id}/complete(id=${m.maintenanceId})}" method="post">
+                            <button class="btn btn-primary btn-small" type="submit">Finalizar</button>
+                        </form>
+                        <a class="btn btn-secondary btn-small" th:href="@{/receptionist/maintenance/{id}/edit(id=${m.maintenanceId})}">Editar</a>
+                        <form th:action="@{/receptionist/maintenance/{id}/delete(id=${m.maintenanceId})}" method="post"
+                              onsubmit="return confirm('Seguro que deseas eliminar este registro?');">
+                            <button class="btn btn-danger btn-small" type="submit">Eliminar</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

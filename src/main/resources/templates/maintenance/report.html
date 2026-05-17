@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Staytic - Reportar problema</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Arial, sans-serif; background: #f4f4f4; color: #222; }
+        header { background: #8B2E2E; color: white; padding: 14px 22px; display: flex; justify-content: space-between; gap: 16px; align-items: center; }
+        header a { color: white; text-decoration: none; font-weight: 600; }
+        main { max-width: 700px; margin: 26px auto; padding: 0 16px; }
+        h1 { margin: 0 0 18px; color: #8B2E2E; font-size: 28px; }
+        .panel { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 18px; }
+        label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 5px; }
+        select, textarea { width: 100%; padding: 10px; border: 1px solid #bbb; border-radius: 6px; font-family: Arial, sans-serif; }
+        textarea { min-height: 130px; resize: vertical; }
+        .field { margin-bottom: 14px; }
+        .actions { display: flex; gap: 10px; margin-top: 18px; }
+        .btn { border: 0; border-radius: 7px; padding: 10px 14px; cursor: pointer; text-decoration: none; display: inline-block; font-weight: 600; }
+        .btn-primary { background: #8B2E2E; color: white; }
+        .btn-secondary { background: #555; color: white; }
+    </style>
+</head>
+<body>
+<header>
+    <strong>Staytic - Reportes</strong>
+    <a th:href="@{/receptionist/maintenance}">Volver a mantenimiento</a>
+</header>
+
+<main>
+    <h1>Reportar problema en habitacion</h1>
+
+    <section class="panel">
+        <form th:action="@{/receptionist/maintenance/report}" method="post">
+            <div class="field">
+                <label for="roomId">Habitacion</label>
+                <select id="roomId" name="roomId" required>
+                    <option value="">Seleccione una habitacion</option>
+                    <option th:each="r : ${rooms}" th:value="${r.roomId}"
+                            th:text="${r.number + ' - Piso ' + r.floor + ' - ' + r.status}"></option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="description">Descripcion del problema</label>
+                <textarea id="description" name="description" required></textarea>
+            </div>
+
+            <div class="actions">
+                <button class="btn btn-primary" type="submit">Reportar</button>
+                <a class="btn btn-secondary" th:href="@{/receptionist/maintenance}">Cancelar</a>
+            </div>
+        </form>
+    </section>
+</main>
+</body>
+</html>

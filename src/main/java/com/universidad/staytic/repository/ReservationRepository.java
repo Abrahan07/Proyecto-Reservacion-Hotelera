@@ -28,6 +28,13 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
                              LocalDate checkOut, ReservationStatus status);
 
     @Query("""
+            select r from Reservation r
+            where lower(r.user.email) = lower(:email)
+            order by r.reservationId desc
+            """)
+    List<Reservation> findByUserEmail(String email);
+
+    @Query("""
             select count(d) from ReservationDetail d
             where d.room.roomId = :roomId
               and d.reservation.status <> com.universidad.staytic.model.ReservationStatus.CANCELLED

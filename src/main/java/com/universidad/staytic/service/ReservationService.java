@@ -1,8 +1,6 @@
 package com.universidad.staytic.service;
 
 import com.universidad.staytic.dto.ReservationForm;
-import com.universidad.staytic.dto.CheckInForm;
-import com.universidad.staytic.dto.CheckOutForm;
 import com.universidad.staytic.model.*;
 import com.universidad.staytic.repository.PromotionRepository;
 import com.universidad.staytic.repository.ReservationRepository;
@@ -24,15 +22,18 @@ public class ReservationService {
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
     private final PromotionRepository promotionRepository;
+    private final NotificationService notificationService;
 
     public ReservationService(ReservationRepository reservationRepository,
                               UserRepository userRepository,
                               RoomRepository roomRepository,
-                              PromotionRepository promotionRepository) {
+                              PromotionRepository promotionRepository,
+                              NotificationService notificationService) {
         this.reservationRepository = reservationRepository;
         this.userRepository = userRepository;
         this.roomRepository = roomRepository;
         this.promotionRepository = promotionRepository;
+        this.notificationService = notificationService;
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','RECEPTIONIST')")
@@ -97,20 +98,35 @@ public class ReservationService {
     @PreAuthorize("hasAnyRole('ADMIN','RECEPTIONIST')")
     @Transactional
     public void create(ReservationForm form) {
+        create(form, null);
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','RECEPTIONIST')")
+    @Transactional
+    public void create(ReservationForm form, String employeeEmail) {
         validateDates(form.getCheckIn(), form.getCheckOut());
         Reservation reservation = new Reservation();
         reservation.setCreatedAt(LocalDateTime.now());
         applyForm(reservation, form, null);
+        applyOperationalFields(reservation, form, employeeEmail);
         reservationRepository.save(reservation);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','RECEPTIONIST')")
     @Transactional
     public void update(Integer id, ReservationForm form) {
+        update(id, form, null);
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','RECEPTIONIST')")
+    @Transactional
+    public void update(Integer id, ReservationForm form, String employeeEmail) {
         validateDates(form.getCheckIn(), form.getCheckOut());
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Reservacion no encontrada"));
         applyForm(reservation, form, id);
+        applyOperationalFields(reservation, form, employeeEmail);
+        notificationService.notifyReservation(reservation, "RESERVATION_UPDATED", "modificada");
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','RECEPTIONIST')")
@@ -127,38 +143,46 @@ public class ReservationService {
     public void changeStatus(Integer id, ReservationStatus status) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Reservacion no encontrada"));
-        reservation.setStatus(status);
+        if (status == ReservationStatus.CONFIRMED) {
+            reservation.confirm();
+            notificationService.notifyReservation(reservation, "RESERVATION_CONFIRMED", "confirmada");
+        } else if (status == ReservationStatus.CANCELLED) {
+            reservation.cancel();
+            notificationService.notifyReservation(reservation, "RESERVATION_CANCELLED", "cancelada");
+        } else {
+            reservation.setStatus(status);
+            notificationService.notifyReservation(reservation, "RESERVATION_UPDATED", "actualizada");
+        }
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','RECEPTIONIST')")
     @Transactional
-    public void registerCheckIn(CheckInForm form, String employeeEmail) {
-        Reservation reservation = reservationRepository.findById(form.getReservationId())
+    public void checkIn(Integer reservationId, String employeeEmail, LocalDateTime realCheckInDateTime) {
+        Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new RuntimeException("Reservacion no encontrada"));
         User employee = userRepository.findByEmail(employeeEmail)
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
-        reservation.setCheckInDateTime(form.getCheckInDateTime());
-        reservation.setEmployeeCheckIn(employee);
-        reservation.setStatus(ReservationStatus.ACTIVE);
-        reservation.getDetails().forEach(detail -> detail.getRoom().setStatus(RoomStatus.OCCUPIED));
+
+        reservation.checkIn(employee, realCheckInDateTime);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','RECEPTIONIST')")
     @Transactional
-    public void registerCheckOut(CheckOutForm form, String employeeEmail) {
-        Reservation reservation = reservationRepository.findById(form.getReservationId())
+    public void checkOut(Integer reservationId,
+                           String employeeEmail,
+                           LocalDateTime realCheckOutDateTime,
+                           float additionalCharges,
+                           float penalty) {
+        Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new RuntimeException("Reservacion no encontrada"));
         if (reservation.getCheckInDateTime() == null) {
             throw new RuntimeException("No se puede registrar check-out sin check-in previo");
         }
+
         User employee = userRepository.findByEmail(employeeEmail)
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
-        reservation.setCheckOutDateTime(form.getCheckOutDateTime());
-        reservation.setAdditionalCharges(form.getAdditionalCharges());
-        reservation.setPenalty(form.getPenalty());
-        reservation.setEmployeeCheckOut(employee);
-        reservation.setStatus(ReservationStatus.FINISHED);
-        reservation.getDetails().forEach(detail -> detail.getRoom().setStatus(RoomStatus.AVAILABLE));
+
+        reservation.checkOut(employee, realCheckOutDateTime, additionalCharges, penalty);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','RECEPTIONIST')")
@@ -179,6 +203,10 @@ public class ReservationService {
         form.setTotalGuests(reservation.getTotalGuests());
         form.setNotes(reservation.getNotes());
         form.setPromotionCode(reservation.getPromotion() == null ? "" : reservation.getPromotion().getCode());
+        form.setCheckInDateTime(reservation.getCheckInDateTime());
+        form.setCheckOutDateTime(reservation.getCheckOutDateTime());
+        form.setAdditionalCharges(reservation.getAdditionalCharges());
+        form.setPenalty(reservation.getPenalty());
         form.setRoomIds(reservation.getDetails().stream()
                 .map(detail -> detail.getRoom().getRoomId())
                 .toList());
@@ -214,6 +242,26 @@ public class ReservationService {
         }
     }
 
+    private void applyOperationalFields(Reservation reservation, ReservationForm form, String employeeEmail) {
+        User employee = null;
+        if (employeeEmail != null && !employeeEmail.isBlank()) {
+            employee = userRepository.findByEmail(employeeEmail)
+                    .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
+        }
+
+        if (form.getCheckInDateTime() != null) {
+            reservation.checkIn(employee, form.getCheckInDateTime());
+        }
+
+        reservation.setAdditionalCharges(form.getAdditionalCharges());
+        reservation.setPenalty(form.getPenalty());
+
+        if (form.getCheckOutDateTime() != null) {
+            reservation.checkOut(employee, form.getCheckOutDateTime(),
+                    form.getAdditionalCharges(), form.getPenalty());
+        }
+    }
+
     private Promotion findPromotion(String code, LocalDate date) {
         if (code == null || code.isBlank()) {
             return null;
@@ -242,5 +290,12 @@ public class ReservationService {
 
     private LocalDateTime endOfDay(LocalDate date) {
         return date == null ? null : date.atTime(23, 59, 59);
+    }
+
+    public List<Reservation> findReservationsByEmail(String email) {
+        if (email == null || email.isBlank()) {
+            throw new RuntimeException("Email del usuario es requerido");
+        }
+        return reservationRepository.findByUserEmail(email.trim());
     }
 }

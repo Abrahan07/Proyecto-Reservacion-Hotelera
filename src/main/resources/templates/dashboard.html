@@ -218,17 +218,6 @@
             <h3>Reservaciones</h3>
         </a>
 
-        <a sec:authorize="hasAnyRole('ADMIN','RECEPTIONIST')"
-           th:href="@{/receptionist/checkins}" class="action-card">
-            <div class="icon">✅</div>
-            <h3>Check-in</h3>
-        </a>
-
-        <a sec:authorize="hasAnyRole('ADMIN','RECEPTIONIST')"
-           th:href="@{/receptionist/checkouts}" class="action-card">
-            <div class="icon">↗</div>
-            <h3>Check-out</h3>
-        </a>
 
         <a sec:authorize="hasAnyRole('ADMIN','RECEPTIONIST')"
            th:href="@{/receptionist/payments}" class="action-card">
@@ -248,14 +237,25 @@
             <h3>Servicios</h3>
         </a>
 
-        <a th:href="@{/dashboard}" class="action-card">
+        <a sec:authorize="hasAnyRole('ADMIN','RECEPTIONIST')"
+           th:href="@{/receptionist/maintenance}" class="action-card">
+            <div class="icon">!</div>
+            <h3>Mantenimiento</h3>
+        </a>
+
+        <a th:href="@{/mis-reservas}" class="action-card">
             <div class="icon">🛏</div>
             <h3>Mis Reservas</h3>
         </a>
 
-        <a th:href="@{/dashboard}" class="action-card">
+        <a th:href="@{/mi-perfil}" class="action-card">
             <div class="icon">👤</div>
             <h3>Mi Perfil</h3>
+        </a>
+
+        <a th:href="@{/notifications}" class="action-card">
+            <div class="icon">i</div>
+            <h3>Notificaciones</h3>
         </a>
 
     </div>

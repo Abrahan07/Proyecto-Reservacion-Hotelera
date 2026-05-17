@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +40,18 @@ public class ReservationForm {
 
     @Size(max = 500, message = "Las notas no pueden superar 500 caracteres")
     private String notes;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    private LocalDateTime checkInDateTime;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    private LocalDateTime checkOutDateTime;
+
+    @Min(value = 0, message = "Los consumos adicionales no pueden ser negativos")
+    private float additionalCharges;
+
+    @Min(value = 0, message = "La penalizacion no puede ser negativa")
+    private float penalty;
 
     public Integer getReservationId() {
         return reservationId;
@@ -110,5 +123,37 @@ public class ReservationForm {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public LocalDateTime getCheckInDateTime() {
+        return checkInDateTime;
+    }
+
+    public void setCheckInDateTime(LocalDateTime checkInDateTime) {
+        this.checkInDateTime = checkInDateTime;
+    }
+
+    public LocalDateTime getCheckOutDateTime() {
+        return checkOutDateTime;
+    }
+
+    public void setCheckOutDateTime(LocalDateTime checkOutDateTime) {
+        this.checkOutDateTime = checkOutDateTime;
+    }
+
+    public float getAdditionalCharges() {
+        return additionalCharges;
+    }
+
+    public void setAdditionalCharges(float additionalCharges) {
+        this.additionalCharges = additionalCharges;
+    }
+
+    public float getPenalty() {
+        return penalty;
+    }
+
+    public void setPenalty(float penalty) {
+        this.penalty = penalty;
     }
 }

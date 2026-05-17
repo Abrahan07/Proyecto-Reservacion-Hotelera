@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Staytic - Notificaciones</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Arial, sans-serif; background: #f4f4f4; color: #222; }
+        header { background: #8B2E2E; color: white; padding: 14px 22px; display: flex; justify-content: space-between; gap: 16px; align-items: center; }
+        header a { color: white; text-decoration: none; font-weight: 600; }
+        main { max-width: 900px; margin: 26px auto; padding: 0 16px; }
+        h1 { margin: 0 0 18px; color: #8B2E2E; font-size: 28px; }
+        .alert { padding: 10px 12px; border-radius: 7px; margin-bottom: 14px; background: #e8f5e9; color: #1b5e20; }
+        .item { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 14px; margin-bottom: 12px; display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; }
+        .item.unread { border-left: 5px solid #8B2E2E; }
+        .type { font-size: 12px; font-weight: 700; color: #8B2E2E; text-transform: uppercase; }
+        .message { margin: 6px 0; }
+        .date { color: #666; font-size: 13px; }
+        .btn { border: 0; border-radius: 7px; padding: 8px 12px; cursor: pointer; font-weight: 600; background: #8B2E2E; color: white; }
+        .empty { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 18px; }
+        @media (max-width: 680px) {
+            header, .item { align-items: stretch; grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <strong>Staytic - Notificaciones</strong>
+    <a th:href="@{/dashboard}">Dashboard</a>
+</header>
+
+<main>
+    <h1>Mis notificaciones</h1>
+
+    <div th:if="${success}" class="alert" th:text="${success}"></div>
+
+    <div th:if="${#lists.isEmpty(notifications)}" class="empty">
+        No tienes notificaciones.
+    </div>
+
+    <div th:each="n : ${notifications}" th:class="${n.read} ? 'item' : 'item unread'">
+        <div>
+            <div class="type" th:text="${n.type}"></div>
+            <div class="message" th:text="${n.message}"></div>
+            <div class="date" th:text="${#temporals.format(n.sentAt, 'yyyy-MM-dd HH:mm')}"></div>
+        </div>
+        <form th:if="${!n.read}" th:action="@{/notifications/{id}/read(id=${n.notificationId})}" method="post">
+            <button class="btn" type="submit">Marcar leida</button>
+        </form>
+    </div>
+</main>
+</body>
+</html>

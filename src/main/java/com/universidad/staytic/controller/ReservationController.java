@@ -5,6 +5,7 @@ import com.universidad.staytic.model.ReservationStatus;
 import com.universidad.staytic.service.ReservationService;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -52,6 +53,7 @@ public class ReservationController {
     @PostMapping
     public String create(@Valid @ModelAttribute("reservationForm") ReservationForm form,
                          BindingResult result,
+                         Authentication authentication,
                          Model model,
                          RedirectAttributes redirect) {
         if (result.hasErrors()) {
@@ -60,7 +62,7 @@ public class ReservationController {
             return "reservations/form";
         }
         try {
-            reservationService.create(form);
+            reservationService.create(form, authentication.getName());
             redirect.addFlashAttribute("success", "Reservacion creada correctamente");
             return "redirect:/receptionist/reservations";
         } catch (RuntimeException ex) {
@@ -86,6 +88,7 @@ public class ReservationController {
     public String update(@PathVariable Integer id,
                          @Valid @ModelAttribute("reservationForm") ReservationForm form,
                          BindingResult result,
+                         Authentication authentication,
                          Model model,
                          RedirectAttributes redirect) {
         form.setReservationId(id);
@@ -95,7 +98,7 @@ public class ReservationController {
             return "reservations/form";
         }
         try {
-            reservationService.update(id, form);
+            reservationService.update(id, form, authentication.getName());
             redirect.addFlashAttribute("success", "Reservacion actualizada correctamente");
             return "redirect:/receptionist/reservations";
         } catch (RuntimeException ex) {

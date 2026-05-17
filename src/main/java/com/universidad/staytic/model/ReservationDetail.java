@@ -5,6 +5,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "detalle_reservaciones")
@@ -38,6 +40,14 @@ public class ReservationDetail {
 
     @Column(nullable = false)
     private float subtotal;
+
+    @ManyToMany
+    @JoinTable(
+            name = "detalle_reservacion_huespedes",
+            joinColumns = @JoinColumn(name = "detail_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<User> guests = new ArrayList<>();
 
     public ReservationDetail() {
     }
@@ -73,14 +83,34 @@ public class ReservationDetail {
     public float getSubtotal() { return subtotal; }
     public void setSubtotal(float subtotal) { this.subtotal = subtotal; }
 
-    public void calculateSubtotal() {
-        if (scheduledCheckIn == null || scheduledCheckOut == null || room == null) {
+    public List<User> getGuests() { return guests; }
+    public void setGuests(List<User> guests) { this.guests = guests; }
+
+    public float calculateSubtotal() {
+        if (!validateDates() || room == null) {
             this.nightCount = 0;
             this.subtotal = 0;
-            return;
+            return subtotal;
         }
         this.nightCount = (int) ChronoUnit.DAYS.between(scheduledCheckIn, scheduledCheckOut);
         this.subtotal = this.nightCount * room.getPricePerNight();
+        return subtotal;
+    }
+
+    protected boolean validateDates() {
+        return scheduledCheckIn != null
+                && scheduledCheckOut != null
+                && scheduledCheckOut.isAfter(scheduledCheckIn);
+    }
+
+    public void addGuest(User guest) {
+        if (guest != null && !this.guests.contains(guest)) {
+            this.guests.add(guest);
+        }
+    }
+
+    public void removeGuest(User guest) {
+        this.guests.remove(guest);
     }
 
     @Override
@@ -88,7 +118,8 @@ public class ReservationDetail {
         return "DetalleReserva{detailId=" + detailId + ", room=" + room +
                 ", scheduledCheckIn=" + scheduledCheckIn +
                 ", scheduledCheckOut=" + scheduledCheckOut +
-                ", nightCount=" + nightCount + ", subtotal=" + subtotal + "}";
+                ", nightCount=" + nightCount + ", subtotal=" + subtotal +
+                ", guests=" + guests.size() + "}";
     }
 
     @Override

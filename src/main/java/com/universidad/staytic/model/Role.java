@@ -1,6 +1,6 @@
 package com.universidad.staytic.model;
 
-public enum Role {
+public enum  Role {
     ADMIN,
     RECEPTIONIST,
     GUEST

@@ -1,6 +1,6 @@
 package com.universidad.staytic.model;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class Invoice {
     private int invoiceId;
@@ -9,12 +9,12 @@ public class Invoice {
     private float subtotal;
     private float taxes;
     private float total;
-    private Date issuedAt;
+    private LocalDateTime issuedAt;
 
     public Invoice() {}
 
     public Invoice(int invoiceId, Reservation reservation, Payment payment,
-                   float subtotal, float taxes, float total, Date issuedAt) {
+                   float subtotal, float taxes, float total, LocalDateTime issuedAt) {
         this.invoiceId = invoiceId;
         this.reservation = reservation;
         this.payment = payment;
@@ -39,7 +39,7 @@ public class Invoice {
     public float getTotal() { return total; }
 
     // issuedAt: solo get, se asigna al emitir
-    public Date getIssuedAt() { return issuedAt; }
+    public LocalDateTime getIssuedAt() { return issuedAt; }
 
     @Override
     public String toString() {

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mis Reservas</title>
+</head>
+<body>
+<h1>Mis Reservas</h1>
+
+<div th:if="${#lists.isEmpty(reservations)}">
+    <p>No tienes reservaciones aún.</p>
+</div>
+
+<table th:if="${!#lists.isEmpty(reservations)}" border="1" cellpadding="8" cellspacing="0">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Estado</th>
+        <th>Fecha entrada</th>
+        <th>Fecha salida</th>
+        <th>Habitaciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="r : ${reservations}">
+        <td th:text="${r.reservationId}"></td>
+        <td th:text="${r.status}"></td>
+        <td th:text="${r.checkInDateTime}"></td>
+        <td th:text="${r.checkOutDateTime}"></td>
+
+        <td>
+            <span th:if="${r.details == null or #lists.isEmpty(r.details)}">-</span>
+            <span th:if="${r.details != null and !#lists.isEmpty(r.details)}">
+                <span th:each="d, stat : ${r.details}">
+                    <span th:text="${d.room != null ? d.room.number : '-'}"></span>
+                    <span th:if="${!stat.last}">, </span>
+                </span>
+            </span>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<p>
+    <a th:href="@{/dashboard}">Volver al dashboard</a>
+</p>
+</body>
+</html>

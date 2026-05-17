@@ -1,20 +1,44 @@
 package com.universidad.staytic.model;
 
-import java.util.Date;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "notificaciones")
 public class Notification {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int notificationId;
+
+    @NotNull(message = "El usuario es obligatorio")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id")
     private User user;
+
+    @NotBlank(message = "El tipo es obligatorio")
+    @Column(nullable = false, length = 40)
     private String type;
+
+    @NotBlank(message = "El mensaje es obligatorio")
+    @Size(max = 500, message = "El mensaje no puede superar 500 caracteres")
+    @Column(nullable = false, length = 500)
     private String message;
-    private Date sentAt;
+
+    @Column(nullable = false)
+    private LocalDateTime sentAt;
+
+    @Column(name = "read_status", nullable = false)
     private boolean read;
 
     public Notification() {}
 
     public Notification(int notificationId, User user, String type,
-                        String message, Date sentAt, boolean read) {
+                        String message, LocalDateTime sentAt, boolean read) {
         this.notificationId = notificationId;
         this.user = user;
         this.type = type;
@@ -23,8 +47,8 @@ public class Notification {
         this.read = read;
     }
 
-    // notificationId: solo get, el id no cambia
     public int getNotificationId() { return notificationId; }
+    public void setNotificationId(int notificationId) { this.notificationId = notificationId; }
 
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
@@ -35,8 +59,8 @@ public class Notification {
     public String getMessage() { return message; }
     public void setMessage(String message) { this.message = message; }
 
-    // sentAt: solo get, se asigna al momento de enviar
-    public Date getSentAt() { return sentAt; }
+    public LocalDateTime getSentAt() { return sentAt; }
+    public void setSentAt(LocalDateTime sentAt) { this.sentAt = sentAt; }
 
     public boolean isRead() { return read; }
     public void setRead(boolean read) { this.read = read; }

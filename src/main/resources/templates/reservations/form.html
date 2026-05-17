@@ -104,6 +104,34 @@
                     <textarea id="notes" th:field="*{notes}"></textarea>
                     <span class="error" th:if="${#fields.hasErrors('notes')}" th:errors="*{notes}"></span>
                 </div>
+
+                <div class="field-full">
+                    <hr>
+                </div>
+
+                <div>
+                    <label for="checkInDateTime">Fecha/hora real de entrada</label>
+                    <input id="checkInDateTime" type="datetime-local" th:field="*{checkInDateTime}">
+                    <span class="error" th:if="${#fields.hasErrors('checkInDateTime')}" th:errors="*{checkInDateTime}"></span>
+                </div>
+
+                <div>
+                    <label for="checkOutDateTime">Fecha/hora real de salida</label>
+                    <input id="checkOutDateTime" type="datetime-local" th:field="*{checkOutDateTime}">
+                    <span class="error" th:if="${#fields.hasErrors('checkOutDateTime')}" th:errors="*{checkOutDateTime}"></span>
+                </div>
+
+                <div>
+                    <label for="additionalCharges">Consumos adicionales</label>
+                    <input id="additionalCharges" type="number" min="0" step="0.01" th:field="*{additionalCharges}">
+                    <span class="error" th:if="${#fields.hasErrors('additionalCharges')}" th:errors="*{additionalCharges}"></span>
+                </div>
+
+                <div>
+                    <label for="penalty">Penalizacion</label>
+                    <input id="penalty" type="number" min="0" step="0.01" th:field="*{penalty}">
+                    <span class="error" th:if="${#fields.hasErrors('penalty')}" th:errors="*{penalty}"></span>
+                </div>
             </div>
 
             <div class="actions">
