@@ -11,6 +11,7 @@ import java.util.List;
 public interface ServiceRepository extends JpaRepository<Service, Integer> {
     boolean existsByNameIgnoreCase(String name);
     boolean existsByNameIgnoreCaseAndServiceIdNot(String name, Integer serviceId);
+    List<Service> findByAvailableTrueOrderByNameAsc();
 
     @Query("""
             select s from Service s

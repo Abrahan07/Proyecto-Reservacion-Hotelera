@@ -1,6 +1,7 @@
 package com.universidad.staytic.service;
 
 import com.universidad.staytic.dto.UserForm;
+import com.universidad.staytic.dto.ProfileForm;
 import com.universidad.staytic.model.Role;
 import com.universidad.staytic.model.User;
 import com.universidad.staytic.repository.UserRepository;
@@ -116,6 +117,30 @@ public class UserService {
         form.setPhone(user.getPhone());
         form.setRole(user.getRole());
         form.setActive(user.isActive());
+        return form;
+    }
+
+    @PreAuthorize("#currentEmail == authentication.name")
+    @Transactional
+    public void updateProfile(String currentEmail, ProfileForm form) {
+        User user = repo.findByEmail(currentEmail)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        if (repo.existsByEmailAndUserIdNot(form.getEmail(), user.getUserId())) {
+            throw new RuntimeException("El correo ya esta registrado por otro usuario");
+        }
+        user.setName(form.getName());
+        user.setEmail(form.getEmail());
+        user.setPhone(form.getPhone());
+        if (form.getPassword() != null && !form.getPassword().isBlank()) {
+            user.setPassword(encoder.encode(form.getPassword()));
+        }
+    }
+
+    public ProfileForm toProfileForm(User user) {
+        ProfileForm form = new ProfileForm();
+        form.setName(user.getName());
+        form.setEmail(user.getEmail());
+        form.setPhone(user.getPhone());
         return form;
     }
 

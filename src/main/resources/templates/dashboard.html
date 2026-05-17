@@ -194,11 +194,17 @@
 
         <span sec:authorize="hasRole('ADMIN')" class="badge badge-admin">⭐ Administrador</span>
         <span sec:authorize="hasRole('RECEPTIONIST')" class="badge badge-receptionist">🛎 Recepcionista</span>
-        <span sec:authorize="hasRole('GUEST')" class="badge badge-guest">🧳 Huésped</span>
+        <span sec:authorize="hasRole('GUEST')" class="badge badge-guest">Cliente</span>
     </div>
 
     <!-- Action Cards -->
     <div class="cards-grid">
+
+        <a sec:authorize="hasRole('GUEST')"
+           th:href="@{/cliente/habitaciones}" class="action-card">
+            <div class="icon">+</div>
+            <h3>Reservar Habitacion</h3>
+        </a>
 
         <a sec:authorize="hasRole('ADMIN')"
            th:href="@{/admin}" class="action-card">

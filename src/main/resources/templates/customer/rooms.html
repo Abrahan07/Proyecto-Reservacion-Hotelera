@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Staytic - Reservar</title>
+    <style>
+        * { box-sizing: border-box; }
+        :root { --brand:#8B2E2E; --dark:#6e2323; --bg:#f3f4f6; --panel:#fff; --line:#e5e7eb; --muted:#6b7280; }
+        body { margin:0; font-family:Arial,sans-serif; background:var(--bg); color:#222; }
+        header { background:var(--brand); color:white; padding:14px 22px; display:flex; justify-content:space-between; gap:16px; align-items:center; }
+        header a { color:white; text-decoration:none; font-weight:700; }
+        main { max-width:1120px; margin:28px auto; padding:0 16px; }
+        h1 { margin:0; color:var(--brand); font-size:30px; }
+        .subtitle { color:var(--muted); margin:6px 0 0; }
+        .search { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:16px; margin:18px 0; display:grid; grid-template-columns:1fr 1fr auto; gap:12px; align-items:end; }
+        label { display:block; font-size:13px; font-weight:700; margin-bottom:5px; }
+        input { width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:7px; }
+        .btn { border:0; border-radius:7px; padding:10px 14px; cursor:pointer; text-decoration:none; display:inline-block; font-weight:700; }
+        .btn-primary { background:var(--brand); color:white; }
+        .btn-primary:hover { background:var(--dark); }
+        .alert { background:#fdecea; color:#b3261e; padding:11px 12px; border-radius:7px; margin-bottom:14px; }
+        .empty { background:white; border:1px solid var(--line); border-radius:8px; padding:22px; color:var(--muted); text-align:center; }
+        .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; }
+        .room { background:white; border:1px solid var(--line); border-radius:8px; overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,.06); }
+        .photo { height:130px; background:linear-gradient(135deg,#8B2E2E,#c08457); display:flex; align-items:end; padding:14px; color:white; font-weight:800; font-size:24px; }
+        .body { padding:15px; }
+        .meta { display:flex; gap:8px; flex-wrap:wrap; margin:10px 0; }
+        .pill { padding:5px 9px; border-radius:999px; background:#f3f4f6; font-size:12px; font-weight:700; }
+        .price { font-size:22px; color:var(--brand); font-weight:800; margin:12px 0; }
+        @media(max-width:760px){ header,.search{grid-template-columns:1fr; align-items:stretch; flex-direction:column;} }
+    </style>
+</head>
+<body>
+<header>
+    <strong>Staytic</strong>
+    <a th:href="@{/dashboard}">Dashboard</a>
+</header>
+<main>
+    <h1>Reservar habitacion</h1>
+    <p class="subtitle">Elige tus fechas y selecciona una habitacion disponible.</p>
+
+    <form class="search" th:action="@{/cliente/habitaciones}" method="get">
+        <div>
+            <label for="checkIn">Fecha de entrada</label>
+            <input id="checkIn" name="checkIn" type="date" th:value="${checkIn}" required>
+        </div>
+        <div>
+            <label for="checkOut">Fecha de salida</label>
+            <input id="checkOut" name="checkOut" type="date" th:value="${checkOut}" required>
+        </div>
+        <button class="btn btn-primary" type="submit">Buscar disponibilidad</button>
+    </form>
+
+    <div th:if="${error}" class="alert" th:text="${error}"></div>
+
+    <div th:if="${rooms != null and #lists.isEmpty(rooms)}" class="empty">
+        No hay habitaciones disponibles para esas fechas.
+    </div>
+
+    <section class="grid" th:if="${rooms != null and !#lists.isEmpty(rooms)}">
+        <article class="room" th:each="r : ${rooms}">
+            <div class="photo" th:text="'Habitacion ' + ${r.number}">Habitacion</div>
+            <div class="body">
+                <div class="meta">
+                    <span class="pill" th:text="${r.type}"></span>
+                    <span class="pill" th:text="'Piso ' + ${r.floor}"></span>
+                    <span class="pill" th:text="${r.status}"></span>
+                </div>
+                <p th:text="${#strings.isEmpty(r.description) ? 'Habitacion confortable para tu estadia.' : r.description}"></p>
+                <div class="price" th:text="'$ ' + ${#numbers.formatDecimal(r.pricePerNight,1,2)} + ' / noche'"></div>
+                <a class="btn btn-primary"
+                   th:href="@{/cliente/reservar(roomId=${r.roomId},checkIn=${checkIn},checkOut=${checkOut})}">
+                    Reservar
+                </a>
+            </div>
+        </article>
+    </section>
+</main>
+</body>
+</html>

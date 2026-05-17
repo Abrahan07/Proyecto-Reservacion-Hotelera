@@ -65,6 +65,14 @@ public class Reservation {
     @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReservationDetail> details = new ArrayList<>();
 
+    @ManyToMany
+    @JoinTable(
+            name = "reservacion_servicios",
+            joinColumns = @JoinColumn(name = "reservation_id"),
+            inverseJoinColumns = @JoinColumn(name = "service_id")
+    )
+    private List<Service> services = new ArrayList<>();
+
     public Reservation() {
     }
 
@@ -214,6 +222,24 @@ public class Reservation {
         this.details.clear();
     }
 
+    public List<Service> getServices() {
+        return services;
+    }
+
+    public void setServices(List<Service> services) {
+        this.services = services;
+    }
+
+    public void addService(Service service) {
+        if (service != null && !this.services.contains(service)) {
+            this.services.add(service);
+        }
+    }
+
+    public void clearServices() {
+        this.services.clear();
+    }
+
     public boolean confirm() {
         if (this.status == ReservationStatus.CANCELLED || this.status == ReservationStatus.FINISHED) {
             return false;
@@ -321,7 +347,11 @@ public class Reservation {
     }
 
     public float calculateCharges() {
-        return additionalCharges + penalty;
+        float serviceCharges = 0;
+        for (Service service : services) {
+            serviceCharges += service.getPrice();
+        }
+        return additionalCharges + penalty + serviceCharges;
     }
 
     public Invoice generateInvoice() {

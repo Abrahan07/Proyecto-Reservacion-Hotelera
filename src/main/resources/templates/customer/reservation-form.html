@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Staytic - Confirmar reserva</title>
+    <style>
+        *{box-sizing:border-box} :root{--brand:#8B2E2E;--bg:#f3f4f6;--line:#e5e7eb;--muted:#6b7280}
+        body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#222}
+        header{background:var(--brand);color:white;padding:14px 22px;display:flex;justify-content:space-between;align-items:center}
+        header a{color:white;text-decoration:none;font-weight:700}
+        main{max-width:1040px;margin:28px auto;padding:0 16px}
+        h1{margin:0 0 18px;color:var(--brand);font-size:30px}
+        .layout{display:grid;grid-template-columns:340px 1fr;gap:18px;align-items:start}
+        .card{background:white;border:1px solid var(--line);border-radius:8px;padding:18px;box-shadow:0 8px 24px rgba(0,0,0,.06)}
+        .summary h2{margin:0 0 8px}.price{font-size:24px;font-weight:800;color:var(--brand);margin:14px 0}
+        .muted{color:var(--muted)} .row{margin-bottom:12px}.label{font-size:12px;text-transform:uppercase;font-weight:800;color:var(--muted);display:block;margin-bottom:4px}
+        .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field-full{grid-column:1/-1}
+        label{display:block;font-size:13px;font-weight:700;margin-bottom:5px}
+        input,textarea{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:7px;font-family:Arial,sans-serif}
+        textarea{min-height:90px;resize:vertical}.error{display:block;color:#b3261e;font-size:13px;margin-top:4px}.global-error{background:#fdecea;color:#b3261e;padding:10px 12px;border-radius:7px;margin-bottom:14px}
+        .services{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}.service{border:1px solid var(--line);border-radius:8px;padding:10px;background:#fafafa}.service label{display:flex;gap:8px;align-items:start;margin:0}.service input{width:auto;margin-top:2px}.service strong{display:block}.service span{display:block;color:var(--muted);font-size:13px;margin-top:3px}
+        .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.btn{border:0;border-radius:7px;padding:10px 14px;cursor:pointer;text-decoration:none;font-weight:700;display:inline-block}.btn-primary{background:var(--brand);color:white}.btn-secondary{background:#4b5563;color:white}
+        @media(max-width:860px){header,.layout,.grid{grid-template-columns:1fr;flex-direction:column;align-items:stretch}}
+    </style>
+</head>
+<body>
+<header>
+    <strong>Staytic</strong>
+    <a th:href="@{/cliente/habitaciones(checkIn=${reservationForm.checkIn},checkOut=${reservationForm.checkOut})}">Volver</a>
+</header>
+<main>
+    <h1>Confirmar reservacion</h1>
+    <div class="layout">
+        <aside class="card summary">
+            <span class="label">Habitacion seleccionada</span>
+            <h2 th:text="'Habitacion ' + ${room.number}"></h2>
+            <div class="muted" th:text="${room.type + ' - Piso ' + room.floor}"></div>
+            <div class="price" th:text="'$ ' + ${#numbers.formatDecimal(room.pricePerNight,1,2)} + ' / noche'"></div>
+            <div class="row">
+                <span class="label">Fechas</span>
+                <strong th:text="${reservationForm.checkIn + ' a ' + reservationForm.checkOut}"></strong>
+            </div>
+            <p class="muted" th:text="${#strings.isEmpty(room.description) ? 'Puedes agregar servicios adicionales antes del pago.' : room.description}"></p>
+        </aside>
+
+        <section class="card">
+            <form th:action="@{/cliente/reservar}" th:object="${reservationForm}" method="post">
+                <div th:if="${#fields.hasGlobalErrors()}" class="global-error">
+                    <div th:each="err : ${#fields.globalErrors()}" th:text="${err}"></div>
+                </div>
+                <input type="hidden" th:field="*{roomId}">
+                <input type="hidden" th:field="*{checkIn}">
+                <input type="hidden" th:field="*{checkOut}">
+
+                <div class="grid">
+                    <div>
+                        <label for="totalGuests">Total de huespedes</label>
+                        <input id="totalGuests" type="number" min="1" th:field="*{totalGuests}" required>
+                        <span class="error" th:if="${#fields.hasErrors('totalGuests')}" th:errors="*{totalGuests}"></span>
+                    </div>
+                    <div>
+                        <label for="promotionCode">Codigo promocional</label>
+                        <input id="promotionCode" type="text" th:field="*{promotionCode}" placeholder="Opcional">
+                        <span class="error" th:if="${#fields.hasErrors('promotionCode')}" th:errors="*{promotionCode}"></span>
+                    </div>
+                    <div class="field-full">
+                        <label>Servicios adicionales</label>
+                        <div class="services">
+                            <div class="service" th:each="s : ${services}">
+                                <label>
+                                    <input type="checkbox" th:field="*{serviceIds}" th:value="${s.serviceId}">
+                                    <span>
+                                        <strong th:text="${s.name}"></strong>
+                                        <span th:text="'$ ' + ${#numbers.formatDecimal(s.price,1,2)}"></span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field-full">
+                        <label for="notes">Notas para el hotel</label>
+                        <textarea id="notes" th:field="*{notes}" placeholder="Opcional"></textarea>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button class="btn btn-primary" type="submit">Continuar al pago</button>
+                    <a class="btn btn-secondary" th:href="@{/cliente/habitaciones(checkIn=${reservationForm.checkIn},checkOut=${reservationForm.checkOut})}">Cancelar</a>
+                </div>
+            </form>
+        </section>
+    </div>
+</main>
+</body>
+</html>

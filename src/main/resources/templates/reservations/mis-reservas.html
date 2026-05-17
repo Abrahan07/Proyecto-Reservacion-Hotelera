@@ -2,47 +2,153 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Mis Reservas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Staytic - Mis Reservas</title>
+    <style>
+        * { box-sizing: border-box; }
+        :root {
+            --brand: #8B2E2E;
+            --brand-dark: #6e2323;
+            --bg: #f3f4f6;
+            --panel: #ffffff;
+            --text: #222;
+            --muted: #6b7280;
+            --line: #e5e7eb;
+        }
+        body { margin: 0; font-family: Arial, sans-serif; background: var(--bg); color: var(--text); }
+        header {
+            background: var(--brand);
+            color: white;
+            padding: 14px 22px;
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            align-items: center;
+        }
+        header a { color: white; text-decoration: none; font-weight: 700; margin-left: 14px; }
+        main { max-width: 1120px; margin: 28px auto; padding: 0 16px; }
+        .page-head { display: flex; justify-content: space-between; gap: 18px; align-items: flex-end; margin-bottom: 18px; }
+        h1 { margin: 0; color: var(--brand); font-size: 30px; }
+        .subtitle { margin: 6px 0 0; color: var(--muted); }
+        .btn {
+            border: 0;
+            border-radius: 7px;
+            padding: 10px 14px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 700;
+        }
+        .btn-secondary { background: #4b5563; color: white; }
+        .empty {
+            background: white;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 28px;
+            text-align: center;
+            color: var(--muted);
+        }
+        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+        }
+        .card-head { display: flex; justify-content: space-between; gap: 12px; align-items: start; margin-bottom: 14px; }
+        .reservation-id { font-size: 12px; color: var(--muted); font-weight: 700; text-transform: uppercase; }
+        .status {
+            padding: 5px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 800;
+            background: #f7eaea;
+            color: var(--brand);
+        }
+        .row { margin-bottom: 12px; }
+        .label { display: block; color: var(--muted); font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
+        .value { font-weight: 700; }
+        .rooms { display: flex; gap: 8px; flex-wrap: wrap; }
+        .room {
+            padding: 6px 9px;
+            border-radius: 7px;
+            background: #f3f4f6;
+            border: 1px solid var(--line);
+            font-weight: 700;
+        }
+        @media (max-width: 760px) {
+            header, .page-head { align-items: stretch; flex-direction: column; }
+            header a { margin-left: 0; margin-right: 12px; }
+        }
+    </style>
 </head>
 <body>
-<h1>Mis Reservas</h1>
+<header>
+    <strong>Staytic</strong>
+    <nav>
+        <a th:href="@{/dashboard}">Dashboard</a>
+        <a th:href="@{/mi-perfil}">Mi perfil</a>
+    </nav>
+</header>
 
-<div th:if="${#lists.isEmpty(reservations)}">
-    <p>No tienes reservaciones aún.</p>
-</div>
+<main>
+    <div class="page-head">
+        <div>
+            <h1>Mis reservas</h1>
+            <p class="subtitle">Historial y estado de tus reservaciones.</p>
+        </div>
+        <a class="btn btn-secondary" th:href="@{/dashboard}">Volver</a>
+    </div>
 
-<table th:if="${!#lists.isEmpty(reservations)}" border="1" cellpadding="8" cellspacing="0">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Estado</th>
-        <th>Fecha entrada</th>
-        <th>Fecha salida</th>
-        <th>Habitaciones</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="r : ${reservations}">
-        <td th:text="${r.reservationId}"></td>
-        <td th:text="${r.status}"></td>
-        <td th:text="${r.checkInDateTime}"></td>
-        <td th:text="${r.checkOutDateTime}"></td>
+    <div th:if="${#lists.isEmpty(reservations)}" class="empty">
+        No tienes reservaciones registradas.
+    </div>
 
-        <td>
-            <span th:if="${r.details == null or #lists.isEmpty(r.details)}">-</span>
-            <span th:if="${r.details != null and !#lists.isEmpty(r.details)}">
-                <span th:each="d, stat : ${r.details}">
-                    <span th:text="${d.room != null ? d.room.number : '-'}"></span>
-                    <span th:if="${!stat.last}">, </span>
-                </span>
-            </span>
-        </td>
-    </tr>
-    </tbody>
-</table>
+    <section class="cards" th:if="${!#lists.isEmpty(reservations)}">
+        <article class="card" th:each="r : ${reservations}">
+            <div class="card-head">
+                <div>
+                    <div class="reservation-id">Reservacion</div>
+                    <strong th:text="'#' + ${r.reservationId}"></strong>
+                </div>
+                <span class="status" th:text="${r.status}"></span>
+            </div>
 
-<p>
-    <a th:href="@{/dashboard}">Volver al dashboard</a>
-</p>
+            <div class="row">
+                <span class="label">Fechas programadas</span>
+                <div th:if="${r.details != null and !#lists.isEmpty(r.details)}">
+                    <span class="value" th:text="${r.details[0].scheduledCheckIn}"></span>
+                    <span> a </span>
+                    <span class="value" th:text="${r.details[0].scheduledCheckOut}"></span>
+                </div>
+                <div th:if="${r.details == null or #lists.isEmpty(r.details)}" class="value">-</div>
+            </div>
+
+            <div class="row">
+                <span class="label">Check-in / Check-out real</span>
+                <div>
+                    <span th:text="${r.checkInDateTime == null ? '-' : #temporals.format(r.checkInDateTime, 'yyyy-MM-dd HH:mm')}"></span>
+                    <span> / </span>
+                    <span th:text="${r.checkOutDateTime == null ? '-' : #temporals.format(r.checkOutDateTime, 'yyyy-MM-dd HH:mm')}"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <span class="label">Habitaciones</span>
+                <div class="rooms" th:if="${r.details != null and !#lists.isEmpty(r.details)}">
+                    <span class="room" th:each="d : ${r.details}"
+                          th:text="${d.room != null ? d.room.number : '-'}"></span>
+                </div>
+                <div th:if="${r.details == null or #lists.isEmpty(r.details)}" class="value">-</div>
+            </div>
+
+            <div class="row">
+                <span class="label">Huespedes</span>
+                <span class="value" th:text="${r.totalGuests}"></span>
+            </div>
+        </article>
+    </section>
+</main>
 </body>
 </html>

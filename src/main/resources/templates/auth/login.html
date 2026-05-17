@@ -201,6 +201,9 @@
         <div th:if="${param.registered}" class="alert alert-success">
             Registro exitoso. Por favor inicia sesión.
         </div>
+        <div th:if="${param.profileUpdated}" class="alert alert-success">
+            Perfil actualizado. Inicia sesión con tus datos nuevos.
+        </div>
 
         <form th:action="@{/login}" method="post">
             <div class="field">
