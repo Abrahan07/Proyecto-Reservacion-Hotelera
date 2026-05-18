@@ -5,92 +5,596 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Staytic - Confirmar reserva</title>
     <style>
-        *{box-sizing:border-box} :root{--brand:#8B2E2E;--bg:#f3f4f6;--line:#e5e7eb;--muted:#6b7280}
-        body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#222}
-        header{background:var(--brand);color:white;padding:14px 22px;display:flex;justify-content:space-between;align-items:center}
-        header a{color:white;text-decoration:none;font-weight:700}
-        main{max-width:1040px;margin:28px auto;padding:0 16px}
-        h1{margin:0 0 18px;color:var(--brand);font-size:30px}
-        .layout{display:grid;grid-template-columns:340px 1fr;gap:18px;align-items:start}
-        .card{background:white;border:1px solid var(--line);border-radius:8px;padding:18px;box-shadow:0 8px 24px rgba(0,0,0,.06)}
-        .summary h2{margin:0 0 8px}.price{font-size:24px;font-weight:800;color:var(--brand);margin:14px 0}
-        .muted{color:var(--muted)} .row{margin-bottom:12px}.label{font-size:12px;text-transform:uppercase;font-weight:800;color:var(--muted);display:block;margin-bottom:4px}
-        .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field-full{grid-column:1/-1}
-        label{display:block;font-size:13px;font-weight:700;margin-bottom:5px}
-        input,textarea{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:7px;font-family:Arial,sans-serif}
-        textarea{min-height:90px;resize:vertical}.error{display:block;color:#b3261e;font-size:13px;margin-top:4px}.global-error{background:#fdecea;color:#b3261e;padding:10px 12px;border-radius:7px;margin-bottom:14px}
-        .services{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}.service{border:1px solid var(--line);border-radius:8px;padding:10px;background:#fafafa}.service label{display:flex;gap:8px;align-items:start;margin:0}.service input{width:auto;margin-top:2px}.service strong{display:block}.service span{display:block;color:var(--muted);font-size:13px;margin-top:3px}
-        .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.btn{border:0;border-radius:7px;padding:10px 14px;cursor:pointer;text-decoration:none;font-weight:700;display:inline-block}.btn-primary{background:var(--brand);color:white}.btn-secondary{background:#4b5563;color:white}
-        @media(max-width:860px){header,.layout,.grid{grid-template-columns:1fr;flex-direction:column;align-items:stretch}}
+        * { box-sizing: border-box; }
+        :root {
+            --brand: #8B2E2E;
+            --brand-soft: #a84747;
+            --ink: #2b2b2b;
+            --muted: #666;
+            --line: #d8d8d8;
+            --panel: #ffffff;
+            --green: #21a86b;
+            --green-soft: #e7f8ee;
+            --bg: #f6f6f6;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+        }
+
+        header {
+            background: var(--brand);
+            color: white;
+            padding: 14px 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+
+        header a {
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        main {
+            max-width: 1180px;
+            margin: 26px auto;
+            padding: 0 16px;
+        }
+
+        .booking-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.1fr) 410px;
+            gap: 28px;
+            align-items: start;
+        }
+
+        .stack {
+            display: grid;
+            gap: 20px;
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 36px;
+            padding: 26px 28px;
+            box-shadow: 0 8px 28px rgba(0,0,0,0.04);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .step {
+            width: 26px;
+            height: 26px;
+            border-radius: 999px;
+            display: inline-grid;
+            place-items: center;
+            background: var(--green-soft);
+            color: #178655;
+            font-size: 13px;
+            font-weight: 900;
+            flex: 0 0 auto;
+        }
+
+        .room-strip {
+            margin-left: 38px;
+            background: #e2f7ea;
+            min-height: 76px;
+            padding: 14px 18px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .room-strip strong {
+            display: block;
+            color: #0f8b56;
+            margin-bottom: 6px;
+        }
+
+        .room-meta {
+            color: #158556;
+            font-size: 13px;
+            line-height: 1.45;
+        }
+
+        .room-price {
+            color: #087542;
+            font-size: 28px;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .room-price small {
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .guest-row {
+            display: grid;
+            grid-template-columns: 210px 1fr;
+            gap: 18px;
+            align-items: end;
+            margin-left: 38px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 12px 14px;
+            font: inherit;
+            background: white;
+        }
+
+        input[type="number"] {
+            max-width: 160px;
+        }
+
+        textarea {
+            min-height: 78px;
+            resize: vertical;
+        }
+
+        .date-note {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.45;
+        }
+
+        .services-grid {
+            margin-left: 38px;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(130px, 1fr));
+            gap: 14px 22px;
+        }
+
+        .service-card {
+            position: relative;
+            border: 1px solid #555;
+            border-radius: 2px;
+            min-height: 58px;
+            padding: 12px 12px 10px 42px;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .service-card input {
+            position: absolute;
+            left: 12px;
+            top: 18px;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--brand-soft);
+        }
+
+        .service-name {
+            display: block;
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        .service-price {
+            display: block;
+            font-size: 12px;
+            color: #404040;
+            margin-top: 2px;
+        }
+
+        .promo-row {
+            margin-left: 38px;
+            display: grid;
+            grid-template-columns: 1fr 160px;
+            gap: 14px;
+        }
+
+        .summary {
+            position: sticky;
+            top: 18px;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 36px;
+            padding: 34px 32px;
+            box-shadow: 0 8px 28px rgba(0,0,0,0.05);
+        }
+
+        .summary h2 {
+            margin: 0 0 18px;
+            font-size: 20px;
+        }
+
+        .summary-hero {
+            background: #e8e8e8;
+            padding: 16px 20px;
+            margin-bottom: 22px;
+        }
+
+        .summary-hero strong {
+            display: block;
+            font-size: 24px;
+            margin-bottom: 6px;
+        }
+
+        .summary-hero span,
+        .summary-row {
+            color: #444;
+        }
+
+        .summary-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 16px;
+            align-items: center;
+            font-size: 18px;
+            margin: 12px 0;
+        }
+
+        .summary-row strong {
+            color: var(--ink);
+        }
+
+        .summary-divider {
+            height: 1px;
+            background: var(--line);
+            margin: 20px 0;
+        }
+
+        .summary-chip {
+            display: inline-block;
+            min-width: 72px;
+            text-align: center;
+            background: #9eedbb;
+            color: #13834f;
+            border-radius: 999px;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 900;
+            margin-left: 8px;
+        }
+
+        .summary-total {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            gap: 16px;
+            font-size: 22px;
+            font-weight: 900;
+        }
+
+        .actions {
+            display: grid;
+            gap: 14px;
+            max-width: 310px;
+            margin: 26px auto 0;
+        }
+
+        .btn {
+            border: 0;
+            border-radius: 4px;
+            padding: 15px 18px;
+            font: inherit;
+            font-weight: 700;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--brand-soft);
+            color: white;
+        }
+
+        .btn-outline {
+            background: white;
+            color: var(--brand);
+            border: 2px solid var(--brand-soft);
+        }
+
+        .global-error {
+            background: #fdecea;
+            color: #b3261e;
+            padding: 12px 14px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            font-weight: 700;
+        }
+
+        .error {
+            display: block;
+            color: #b3261e;
+            font-size: 13px;
+            margin-top: 6px;
+        }
+
+        .promo-feedback {
+            display: block;
+            color: #178655;
+            font-size: 13px;
+            font-weight: 800;
+            margin-top: 6px;
+        }
+
+        .promo-feedback.invalid {
+            color: #b3261e;
+        }
+
+        .notes-panel {
+            margin-left: 38px;
+            margin-top: 16px;
+        }
+
+        @media (max-width: 980px) {
+            .booking-layout { grid-template-columns: 1fr; }
+            .summary { position: static; }
+        }
+
+        @media (max-width: 680px) {
+            header { align-items: stretch; flex-direction: column; }
+            .panel, .summary { border-radius: 18px; padding: 20px; }
+            .room-strip, .guest-row, .services-grid, .promo-row, .notes-panel { margin-left: 0; }
+            .room-strip { grid-template-columns: 1fr; }
+            .guest-row, .promo-row { grid-template-columns: 1fr; }
+            .services-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
 <header>
     <strong>Staytic</strong>
-    <a th:href="@{/cliente/habitaciones(checkIn=${reservationForm.checkIn},checkOut=${reservationForm.checkOut})}">Volver</a>
+    <a th:href="@{/dashboard(checkIn=${reservationForm.checkIn},checkOut=${reservationForm.checkOut})}">Volver</a>
 </header>
+
 <main>
-    <h1>Confirmar reservacion</h1>
-    <div class="layout">
-        <aside class="card summary">
-            <span class="label">Habitacion seleccionada</span>
-            <h2 th:text="'Habitacion ' + ${room.number}"></h2>
-            <div class="muted" th:text="${room.type + ' - Piso ' + room.floor}"></div>
-            <div class="price" th:text="'$ ' + ${#numbers.formatDecimal(room.pricePerNight,1,2)} + ' / noche'"></div>
-            <div class="row">
-                <span class="label">Fechas</span>
-                <strong th:text="${reservationForm.checkIn + ' a ' + reservationForm.checkOut}"></strong>
-            </div>
-            <p class="muted" th:text="${#strings.isEmpty(room.description) ? 'Puedes agregar servicios adicionales antes del pago.' : room.description}"></p>
-        </aside>
+    <form id="reservationForm" th:action="@{/cliente/reservar}" th:object="${reservationForm}" method="post"
+          th:attr="data-room-price=${room.pricePerNight},data-check-in=${reservationForm.checkIn},data-check-out=${reservationForm.checkOut}">
+        <div th:if="${#fields.hasGlobalErrors()}" class="global-error">
+            <div th:each="err : ${#fields.globalErrors()}" th:text="${err}"></div>
+        </div>
 
-        <section class="card">
-            <form th:action="@{/cliente/reservar}" th:object="${reservationForm}" method="post">
-                <div th:if="${#fields.hasGlobalErrors()}" class="global-error">
-                    <div th:each="err : ${#fields.globalErrors()}" th:text="${err}"></div>
-                </div>
-                <input type="hidden" th:field="*{roomId}">
-                <input type="hidden" th:field="*{checkIn}">
-                <input type="hidden" th:field="*{checkOut}">
+        <input type="hidden" th:field="*{roomId}">
+        <input type="hidden" th:field="*{checkIn}">
+        <input type="hidden" th:field="*{checkOut}">
 
-                <div class="grid">
-                    <div>
-                        <label for="totalGuests">Total de huespedes</label>
-                        <input id="totalGuests" type="number" min="1" th:field="*{totalGuests}" required>
-                        <span class="error" th:if="${#fields.hasErrors('totalGuests')}" th:errors="*{totalGuests}"></span>
+        <div class="booking-layout">
+            <section class="stack">
+                <div class="panel">
+                    <div class="section-title">
+                        <span class="step"></span>
+                        <span>Habitaci&oacute;n seleccionada</span>
                     </div>
-                    <div>
-                        <label for="promotionCode">Codigo promocional</label>
-                        <input id="promotionCode" type="text" th:field="*{promotionCode}" placeholder="Opcional">
-                        <span class="error" th:if="${#fields.hasErrors('promotionCode')}" th:errors="*{promotionCode}"></span>
-                    </div>
-                    <div class="field-full">
-                        <label>Servicios adicionales</label>
-                        <div class="services">
-                            <div class="service" th:each="s : ${services}">
-                                <label>
-                                    <input type="checkbox" th:field="*{serviceIds}" th:value="${s.serviceId}">
-                                    <span>
-                                        <strong th:text="${s.name}"></strong>
-                                        <span th:text="'$ ' + ${#numbers.formatDecimal(s.price,1,2)}"></span>
-                                    </span>
-                                </label>
+                    <div class="room-strip">
+                        <div>
+                            <strong th:text="${'Habitacion ' + room.number + ' ' + room.type}"></strong>
+                            <div class="room-meta">
+                                <span th:text="${'Capacidad: ' + reservationForm.totalGuests + ' personas'}"></span>
+                                <span> &middot; </span>
+                                <span th:text="${'Piso ' + room.floor}"></span><br>
+                                <span th:text="${#strings.isEmpty(room.description) ? 'Soporte al hu&eacute;sped 24/7' : room.description}"></span>
                             </div>
                         </div>
+                        <div class="room-price">
+                            <span class="js-room-price" th:text="${'$' + #numbers.formatDecimal(room.pricePerNight,1,0)}"></span>
+                            <small>/COP</small>
+                        </div>
                     </div>
-                    <div class="field-full">
+                </div>
+
+                <div class="panel">
+                    <div class="section-title">
+                        <span class="step">1</span>
+                        <span>Hu&eacute;spedes</span>
+                    </div>
+                    <div class="guest-row">
+                        <div>
+                            <label for="totalGuests">Cantidad de hu&eacute;spedes</label>
+                            <input id="totalGuests" type="number" min="1" th:field="*{totalGuests}" required>
+                            <span class="error" th:if="${#fields.hasErrors('totalGuests')}" th:errors="*{totalGuests}"></span>
+                        </div>
+                        <p class="date-note">
+                            Fechas seleccionadas:
+                            <strong th:text="${reservationForm.checkIn}"></strong>
+                            a
+                            <strong th:text="${reservationForm.checkOut}"></strong>.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="section-title">
+                        <span class="step">2</span>
+                        <span>Servicios adicionales</span>
+                    </div>
+                    <div class="services-grid">
+                        <label class="service-card" th:each="s : ${services}">
+                            <input type="checkbox" th:field="*{serviceIds}" th:value="${s.serviceId}" th:attr="data-service-price=${s.price},data-service-name=${s.name}">
+                            <span>
+                                <span class="service-name" th:text="${s.name}"></span>
+                                <span class="service-price" th:text="${'+ $ ' + #numbers.formatDecimal(s.price,1,0)}"></span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="section-title">
+                        <span class="step">3</span>
+                        <span>C&oacute;digo de promoci&oacute;n</span>
+                    </div>
+                    <div class="promo-row">
+                        <div>
+                            <input id="promotionCode" type="text" th:field="*{promotionCode}" placeholder="Ingresar tu codigo">
+                            <span class="error" th:if="${#fields.hasErrors('promotionCode')}" th:errors="*{promotionCode}"></span>
+                            <span id="promoFeedback" class="promo-feedback"></span>
+                        </div>
+                        <button id="applyPromotion" class="btn btn-primary" type="button">Aplicar</button>
+                    </div>
+                    <div class="notes-panel">
                         <label for="notes">Notas para el hotel</label>
                         <textarea id="notes" th:field="*{notes}" placeholder="Opcional"></textarea>
                     </div>
                 </div>
+            </section>
+
+            <aside class="summary">
+                <h2>Resumen de reservaci&oacute;n</h2>
+                <div class="summary-hero">
+                    <strong th:text="${'Habitacion ' + room.number + ' ' + room.type}"></strong>
+                    <span th:text="${'Capacidad: ' + reservationForm.totalGuests + ' personas - Piso ' + room.floor}"></span>
+                </div>
+
+                <div class="summary-row">
+                    <strong>Check-in</strong>
+                    <strong th:text="${reservationForm.checkIn}"></strong>
+                </div>
+                <div class="summary-row">
+                    <strong>Check-out</strong>
+                    <strong th:text="${reservationForm.checkOut}"></strong>
+                </div>
+                <div class="summary-row">
+                    <strong>Hu&eacute;spedes</strong>
+                    <strong><span id="guestSummary" th:text="${reservationForm.totalGuests}"></span> Personas</strong>
+                </div>
+
+                <div class="summary-divider"></div>
+
+                <div class="summary-row">
+                    <strong>Habitaci&oacute;n <span id="nightsChip" class="summary-chip">1 noche</span></strong>
+                    <strong id="roomTotal">$0</strong>
+                </div>
+                <div class="summary-row">
+                    <strong>Servicios <span id="servicesChip" class="summary-chip">Sin extras</span></strong>
+                    <strong id="servicesTotal">$0</strong>
+                </div>
+                <div class="summary-row" id="discountRow" style="display:none">
+                    <strong>Descuento <span id="discountChip" class="summary-chip">0%</span></strong>
+                    <strong id="discountTotal">-$0</strong>
+                </div>
+
+                <div class="summary-divider"></div>
+
+                <div class="summary-total">
+                    <span>TOTAL A PAGAR</span>
+                    <span id="grandTotal">$0</span>
+                </div>
 
                 <div class="actions">
-                    <button class="btn btn-primary" type="submit">Continuar al pago</button>
-                    <a class="btn btn-secondary" th:href="@{/cliente/habitaciones(checkIn=${reservationForm.checkIn},checkOut=${reservationForm.checkOut})}">Cancelar</a>
+                    <button class="btn btn-primary" type="submit">Reservar y continuar al pago</button>
+                    <a class="btn btn-outline" th:href="@{/dashboard(checkIn=${reservationForm.checkIn},checkOut=${reservationForm.checkOut})}">Volver</a>
                 </div>
-            </form>
-        </section>
-    </div>
+            </aside>
+        </div>
+    </form>
 </main>
+
+<script>
+    const form = document.getElementById('reservationForm');
+    const guestsInput = document.getElementById('totalGuests');
+    const guestSummary = document.getElementById('guestSummary');
+    const roomTotal = document.getElementById('roomTotal');
+    const servicesTotal = document.getElementById('servicesTotal');
+    const grandTotal = document.getElementById('grandTotal');
+    const nightsChip = document.getElementById('nightsChip');
+    const servicesChip = document.getElementById('servicesChip');
+    const discountRow = document.getElementById('discountRow');
+    const discountChip = document.getElementById('discountChip');
+    const discountTotal = document.getElementById('discountTotal');
+    const promotionInput = document.getElementById('promotionCode');
+    const applyPromotion = document.getElementById('applyPromotion');
+    const promoFeedback = document.getElementById('promoFeedback');
+    const serviceInputs = Array.from(document.querySelectorAll('[data-service-price]'));
+    let promotionDiscount = 0;
+
+    function money(value) {
+        return new Intl.NumberFormat('es-CO', {
+            style: 'currency',
+            currency: 'COP',
+            maximumFractionDigits: 0
+        }).format(value || 0);
+    }
+
+    function nights() {
+        const checkIn = new Date(form.dataset.checkIn + 'T00:00:00');
+        const checkOut = new Date(form.dataset.checkOut + 'T00:00:00');
+        const diff = Math.round((checkOut - checkIn) / 86400000);
+        return diff > 0 ? diff : 1;
+    }
+
+    function updateSummary() {
+        const nightCount = nights();
+        const roomPrice = Number(form.dataset.roomPrice || 0);
+        const selectedServices = serviceInputs.filter(input => input.checked);
+        const serviceTotal = selectedServices.reduce((sum, input) => sum + Number(input.dataset.servicePrice || 0), 0);
+        const roomSubtotal = roomPrice * nightCount;
+        const discountAmount = roomSubtotal * (promotionDiscount / 100);
+
+        guestSummary.textContent = guestsInput.value || '1';
+        nightsChip.textContent = nightCount === 1 ? '1 noche' : `${nightCount} noches`;
+        servicesChip.textContent = selectedServices.length === 0 ? 'Sin extras' : `${selectedServices.length} extras`;
+        discountRow.style.display = promotionDiscount > 0 ? 'grid' : 'none';
+        discountChip.textContent = `${promotionDiscount}%`;
+        roomTotal.textContent = money(roomSubtotal);
+        servicesTotal.textContent = money(serviceTotal);
+        discountTotal.textContent = `- ${money(discountAmount)}`;
+        grandTotal.textContent = money(roomSubtotal - discountAmount + serviceTotal);
+    }
+
+    guestsInput.addEventListener('input', updateSummary);
+    serviceInputs.forEach(input => input.addEventListener('change', updateSummary));
+    promotionInput.addEventListener('input', () => {
+        promotionDiscount = 0;
+        promoFeedback.textContent = '';
+        promoFeedback.classList.remove('invalid');
+        updateSummary();
+    });
+    applyPromotion.addEventListener('click', async () => {
+        const code = promotionInput.value.trim();
+        if (!code) {
+            promotionDiscount = 0;
+            promoFeedback.textContent = 'Ingresa un codigo de promocion.';
+            promoFeedback.classList.add('invalid');
+            updateSummary();
+            return;
+        }
+
+        const params = new URLSearchParams({ code, checkIn: form.dataset.checkIn });
+        const response = await fetch(`/cliente/promocion?${params.toString()}`);
+        const promotion = await response.json();
+        if (promotion.valid) {
+            promotionDiscount = Number(promotion.discount || 0);
+            promoFeedback.textContent = `Promocion aplicada: ${promotionDiscount}% de descuento.`;
+            promoFeedback.classList.remove('invalid');
+        } else {
+            promotionDiscount = 0;
+            promoFeedback.textContent = promotion.message || 'El codigo no es valido para estas fechas.';
+            promoFeedback.classList.add('invalid');
+        }
+        updateSummary();
+    });
+    updateSummary();
+</script>
 </body>
 </html>

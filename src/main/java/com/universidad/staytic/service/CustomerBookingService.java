@@ -70,6 +70,30 @@ public class CustomerBookingService {
     @PreAuthorize("hasRole('GUEST')")
     @Transactional
     public Reservation createReservation(CustomerReservationForm form, String email) {
+        Reservation reservation = buildReservation(form, email);
+        return reservationRepository.save(reservation);
+    }
+
+    @PreAuthorize("hasRole('GUEST')")
+    public void validateReservationRequest(CustomerReservationForm form) {
+        validateDates(form.getCheckIn(), form.getCheckOut());
+        Room room = roomRepository.findById(form.getRoomId())
+                .orElseThrow(() -> new RuntimeException("Habitacion no encontrada"));
+        if (room.getStatus() != RoomStatus.AVAILABLE
+                || reservationRepository.countRoomConflicts(room.getRoomId(), form.getCheckIn(), form.getCheckOut(), null) > 0) {
+            throw new RuntimeException("La habitacion ya no esta disponible para esas fechas");
+        }
+        findPromotion(form.getPromotionCode(), form.getCheckIn());
+    }
+
+    @PreAuthorize("hasRole('GUEST')")
+    @Transactional
+    public Payment createAndPayReservation(CustomerReservationForm form, String email) {
+        Reservation reservation = reservationRepository.save(buildReservation(form, email));
+        return payReservation(reservation.getReservationId(), email);
+    }
+
+    private Reservation buildReservation(CustomerReservationForm form, String email) {
         validateDates(form.getCheckIn(), form.getCheckOut());
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
@@ -97,29 +121,48 @@ public class CustomerBookingService {
         reservation.addDetail(detail);
 
         List<com.universidad.staytic.model.Service> services = findSelectedServices(form.getServiceIds());
-        float serviceTotal = 0;
         for (com.universidad.staytic.model.Service service : services) {
             reservation.addService(service);
-            serviceTotal += service.getPrice();
         }
-        reservation.setAdditionalCharges(serviceTotal);
+        reservation.setAdditionalCharges(0);
 
-        return reservationRepository.save(reservation);
+        return reservation;
     }
 
     @PreAuthorize("hasRole('GUEST')")
     @Transactional
     public Payment payReservation(Integer reservationId, String email, PaymentMethod paymentMethod) {
+        return payReservation(reservationId, email);
+    }
+
+    @PreAuthorize("hasRole('GUEST')")
+    @Transactional
+    public Payment payReservation(Integer reservationId, String email) {
         Reservation reservation = getReservationForUser(reservationId, email);
         Payment payment = new Payment();
         payment.setReservation(reservation);
         payment.setAmount(reservation.calculateTotal());
-        payment.setPaymentMethod(paymentMethod);
+        payment.setPaymentMethod(PaymentMethod.ONLINE);
         payment.setPaymentDate(LocalDate.now());
         payment.setStatus("PAGADO");
         payment.setReference("CLI-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
         reservation.confirm();
         return paymentRepository.save(payment);
+    }
+
+    @PreAuthorize("hasRole('GUEST')")
+    @Transactional
+    public void cancelReservation(Integer reservationId, String email) {
+        Reservation reservation = getReservationForUser(reservationId, email);
+        if (reservation.getStatus() == ReservationStatus.CONFIRMED || reservation.getStatus() == ReservationStatus.ACTIVE) {
+            throw new RuntimeException("No se puede anular una reservacion confirmada");
+        }
+        reservation.cancel();
+    }
+
+    @PreAuthorize("hasRole('GUEST')")
+    public Promotion getValidPromotion(String code, LocalDate date) {
+        return findPromotion(code, date);
     }
 
     private List<com.universidad.staytic.model.Service> findSelectedServices(List<Integer> serviceIds) {

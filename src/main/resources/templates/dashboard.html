@@ -3,167 +3,401 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Staytic - Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --burdo: #8B2E2E;
-            --burdo-dark: #6e2323;
-            --bg: #e8e8e8;
-            --card-bg: #ffffff;
-            --text: #2c2c2c;
-            --muted: #666;
-            --border: #d0d0d0;
+            --brand: #8B2E2E;
+            --brand-dark: #6e2323;
+            --bg: #eeeeee;
+            --panel: #ffffff;
+            --text: #252525;
+            --muted: #686868;
+            --line: #dddddd;
+            --soft: #f8f1ef;
+            --green: #23724a;
         }
 
         body {
             font-family: 'DM Sans', sans-serif;
-            background-color: var(--bg);
+            background: var(--bg);
+            color: var(--text);
             display: flex;
             flex-direction: column;
             min-height: 100vh;
         }
 
-        /* ── HEADER ── */
         header {
-            background: var(--burdo);
+            background: var(--brand);
             padding: 0.75rem 1.5rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 1rem;
         }
+
         .nav-left {
             display: flex;
             align-items: center;
             gap: 0.6rem;
         }
+
         .nav-brand {
             font-family: 'Playfair Display', serif;
             color: white;
             font-size: 1.15rem;
             letter-spacing: 0.5px;
         }
+
         .btn-logout {
-            background: var(--burdo-dark);
+            background: var(--brand-dark);
             color: white;
             border: 1.5px solid rgba(255,255,255,0.3);
             padding: 0.45rem 1rem;
             border-radius: 8px;
             font-family: 'DM Sans', sans-serif;
             font-size: 0.88rem;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 0.4rem;
-            transition: background 0.2s;
         }
+
         .btn-logout:hover { background: #5a1c1c; }
 
-        /* ── MAIN ── */
         main {
             flex: 1;
-            max-width: 860px;
+            max-width: 1180px;
             width: 100%;
-            margin: 2.5rem auto;
+            margin: 2rem auto;
             padding: 0 1.2rem;
         }
 
-        /* ── WELCOME CARD ── */
-        .welcome-card {
-            background: var(--card-bg);
-            border-radius: 18px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.09);
-            padding: 2.4rem 2rem;
-            text-align: center;
-            margin-bottom: 1.8rem;
+        .dashboard-shell {
+            display: grid;
+            grid-template-columns: minmax(240px, 320px) 1fr;
+            gap: 1.1rem;
+            align-items: start;
         }
+
+        .welcome-card,
+        .dashboard-card,
+        .rooms-panel {
+            background: var(--panel);
+            border: 1px solid rgba(0,0,0,0.06);
+            border-radius: 12px;
+            box-shadow: 0 8px 26px rgba(0,0,0,0.07);
+        }
+
+        .welcome-card {
+            padding: 1.6rem;
+            position: sticky;
+            top: 1rem;
+        }
+
         .welcome-card h1 {
             font-family: 'Playfair Display', serif;
-            color: var(--burdo);
-            font-size: 1.8rem;
-            margin-bottom: 0.5rem;
+            color: var(--brand);
+            font-size: 1.7rem;
+            line-height: 1.1;
+            margin-bottom: 0.9rem;
         }
+
         .welcome-card .email {
             color: var(--text);
             font-size: 0.95rem;
-            margin-bottom: 0.2rem;
+            margin-bottom: 0.25rem;
+            overflow-wrap: anywhere;
         }
+
         .welcome-card .name {
             color: var(--muted);
-            font-size: 0.88rem;
-            margin-bottom: 1.2rem;
+            font-size: 0.9rem;
+            margin-bottom: 1.15rem;
         }
 
-        /* ── BADGES ── */
         .badge {
             display: inline-block;
-            padding: 0.35rem 1.1rem;
-            border-radius: 20px;
-            font-size: 0.82rem;
-            font-weight: 500;
+            padding: 0.35rem 0.85rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
         }
-        .badge-admin        { background: #fdf0e0; color: #a0522d; }
-        .badge-receptionist { background: #eaf5ea; color: #2e7d32; }
-        .badge-guest        { background: #f0eded; color: var(--burdo); }
 
-        /* ── CARDS GRID ── */
+        .badge-admin { background: #fdf0e0; color: #8c4b1f; }
+        .badge-receptionist { background: #e8f5ea; color: #286735; }
+        .badge-guest { background: var(--soft); color: var(--brand); }
+
         .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 1rem;
-        }
-        .action-card {
-            background: var(--card-bg);
-            border-radius: 14px;
-            padding: 1.8rem 1rem;
-            text-align: center;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.07);
-            text-decoration: none;
-            color: var(--text);
-            transition: transform 0.2s, box-shadow 0.2s;
-            border-top: 3px solid var(--burdo);
-        }
-        .action-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(139,46,46,0.15);
-        }
-        .action-card .icon {
-            font-size: 2.2rem;
-            margin-bottom: 0.6rem;
-        }
-        .action-card h3 {
-            font-size: 0.95rem;
-            font-weight: 500;
-            color: var(--text);
+            grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+            gap: 0.85rem;
+            margin-bottom: 1.1rem;
         }
 
-        /* ── FOOTER ── */
+        .action-card {
+            background: var(--panel);
+            border-radius: 10px;
+            padding: 1.05rem;
+            min-height: 104px;
+            text-decoration: none;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+            border: 1px solid rgba(139,46,46,0.14);
+            border-top: 3px solid var(--brand);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .action-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 22px rgba(139,46,46,0.13);
+        }
+
+        .action-card .icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
+            display: grid;
+            place-items: center;
+            background: var(--soft);
+            color: var(--brand);
+            font-weight: 800;
+            font-size: 1rem;
+        }
+
+        .action-card h3 {
+            font-size: 0.92rem;
+            font-weight: 700;
+            line-height: 1.25;
+            margin-top: 0.8rem;
+        }
+
+        .rooms-panel {
+            overflow: hidden;
+        }
+
+        .rooms-head {
+            padding: 1.3rem 1.35rem;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 1rem;
+            align-items: end;
+            background: linear-gradient(180deg, #ffffff 0%, #fbf7f6 100%);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .rooms-title h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--brand);
+            font-size: 1.55rem;
+            line-height: 1.15;
+            margin-bottom: 0.3rem;
+        }
+
+        .rooms-title p {
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .availability-form {
+            display: grid;
+            grid-template-columns: minmax(150px, 1fr) minmax(150px, 1fr) auto auto;
+            gap: 0.55rem;
+            align-items: end;
+        }
+
+        label {
+            display: block;
+            color: var(--muted);
+            font-size: 0.78rem;
+            font-weight: 700;
+            margin-bottom: 0.28rem;
+        }
+
+        input {
+            width: 100%;
+            border: 1px solid #cfcfcf;
+            border-radius: 8px;
+            padding: 0.68rem 0.75rem;
+            font: inherit;
+            background: white;
+        }
+
+        .btn {
+            border: 0;
+            border-radius: 8px;
+            padding: 0.72rem 0.95rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.88rem;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn-primary { background: var(--brand); color: white; }
+        .btn-secondary { background: #555; color: white; }
+        .btn-primary:hover { background: var(--brand-dark); }
+        .btn-secondary:hover { background: #454545; }
+        .btn:disabled {
+            background: #c7c7c7;
+            color: #666;
+            cursor: not-allowed;
+        }
+
+        .alert-error {
+            margin: 1rem 1.35rem 0;
+            border-radius: 8px;
+            padding: 0.75rem 0.9rem;
+            color: #9f241c;
+            background: #fdecea;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .rooms-summary {
+            padding: 1rem 1.35rem 0;
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .rooms-count {
+            color: var(--green);
+            font-weight: 800;
+        }
+
+        .room-grid {
+            padding: 1rem 1.35rem 1.35rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 0.9rem;
+        }
+
+        .room-card {
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 1rem;
+            background: #fff;
+            min-height: 198px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+        }
+
+        .room-card:hover {
+            border-color: rgba(139,46,46,0.45);
+            box-shadow: 0 8px 22px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+        }
+
+        .room-number {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 0.8rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .room-number strong {
+            color: var(--brand);
+            font-size: 1.35rem;
+        }
+
+        .status-pill {
+            background: #e9f6ef;
+            color: var(--green);
+            border-radius: 999px;
+            padding: 0.25rem 0.55rem;
+            font-size: 0.72rem;
+            font-weight: 800;
+        }
+
+        .room-meta {
+            display: grid;
+            gap: 0.35rem;
+            color: var(--muted);
+            font-size: 0.88rem;
+        }
+
+        .room-price {
+            margin-top: 0.8rem;
+            color: var(--text);
+            font-weight: 800;
+        }
+
+        .room-actions {
+            margin-top: 0.9rem;
+            display: grid;
+            gap: 0.45rem;
+        }
+
+        .room-actions form,
+        .room-actions .btn {
+            width: 100%;
+        }
+
+        .room-note {
+            color: var(--muted);
+            font-size: 0.76rem;
+            line-height: 1.25;
+        }
+
+        .empty-state {
+            margin: 1rem 1.35rem 1.35rem;
+            border: 1px dashed #cfcfcf;
+            border-radius: 10px;
+            padding: 1.2rem;
+            color: var(--muted);
+            background: #fafafa;
+        }
+
         footer {
-            background: var(--burdo);
+            background: var(--brand);
             padding: 1rem;
             text-align: center;
             margin-top: auto;
         }
-        footer hr {
-            border: none;
-            border-top: 1px solid rgba(255,255,255,0.25);
-            margin-bottom: 0.6rem;
-        }
+
         footer p {
-            color: rgba(255,255,255,0.75);
+            color: rgba(255,255,255,0.78);
             font-size: 0.82rem;
+        }
+
+        @media (max-width: 920px) {
+            .dashboard-shell { grid-template-columns: 1fr; }
+            .welcome-card { position: static; }
+            .rooms-head { grid-template-columns: 1fr; }
+            .availability-form { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 560px) {
+            header { align-items: stretch; flex-direction: column; }
+            main { margin: 1.2rem auto; padding: 0 0.8rem; }
+            .cards-grid { grid-template-columns: 1fr 1fr; }
+            .room-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
     <div class="nav-left">
-        <svg width="28" height="28" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <svg width="28" height="28" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <rect x="6" y="6" width="52" height="52" rx="6" fill="none" stroke="white" stroke-width="3.5"/>
             <rect x="16" y="16" width="10" height="10" rx="1.5" fill="white"/>
             <rect x="38" y="16" width="10" height="10" rx="1.5" fill="white"/>
@@ -175,102 +409,172 @@
     </div>
     <form th:action="@{/logout}" method="post">
         <button type="submit" class="btn-logout">
-            <svg width="14" height="14" fill="white" viewBox="0 0 24 24">
+            <svg width="14" height="14" fill="white" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M16 13v-2H7V8l-5 4 5 4v-3zM20 3h-9a2 2 0 00-2 2v4h2V5h9v14h-9v-4H9v4a2 2 0 002 2h9a2 2 0 002-2V5a2 2 0 00-2-2z"/>
             </svg>
-            Cerrar sesión
+            Cerrar sesi&oacute;n
         </button>
     </form>
 </header>
 
-<!-- MAIN -->
 <main>
+    <div class="dashboard-shell">
+        <aside class="welcome-card">
+            <h1>Bienvenido de nuevo</h1>
+            <p class="email">Sesi&oacute;n iniciada como <strong th:text="${email}"></strong></p>
+            <p class="name">Nombre: <span th:text="${userName}"></span></p>
 
-    <!-- Welcome -->
-    <div class="welcome-card">
-        <h1>¡Bienvenido de nuevo! 👋</h1>
-        <p class="email">Sesión iniciada como <strong th:text="${email}"></strong></p>
-        <p class="name">Nombre: <span th:text="${userName}"></span></p>
+            <span sec:authorize="hasRole('ADMIN')" class="badge badge-admin">Administrador</span>
+            <span sec:authorize="hasRole('RECEPTIONIST')" class="badge badge-receptionist">Recepcionista</span>
+            <span sec:authorize="hasRole('GUEST')" class="badge badge-guest">Cliente</span>
+        </aside>
 
-        <span sec:authorize="hasRole('ADMIN')" class="badge badge-admin">⭐ Administrador</span>
-        <span sec:authorize="hasRole('RECEPTIONIST')" class="badge badge-receptionist">🛎 Recepcionista</span>
-        <span sec:authorize="hasRole('GUEST')" class="badge badge-guest">Cliente</span>
-    </div>
+        <section>
+            <div class="cards-grid">
+                <a sec:authorize="hasRole('ADMIN')"
+                   th:href="@{/admin}" class="action-card">
+                    <div class="icon">US</div>
+                    <h3>Gestionar usuarios</h3>
+                </a>
 
-    <!-- Action Cards -->
-    <div class="cards-grid">
+                <a sec:authorize="hasAnyRole('ADMIN','RECEPTIONIST')"
+                   th:href="@{/receptionist/rooms}" class="action-card">
+                    <div class="icon">H</div>
+                    <h3>Habitaciones</h3>
+                </a>
 
-        <a sec:authorize="hasRole('GUEST')"
-           th:href="@{/cliente/habitaciones}" class="action-card">
-            <div class="icon">+</div>
-            <h3>Reservar Habitacion</h3>
-        </a>
+                <a sec:authorize="hasAnyRole('ADMIN','RECEPTIONIST')"
+                   th:href="@{/receptionist/reservations}" class="action-card">
+                    <div class="icon">R</div>
+                    <h3>Reservaciones</h3>
+                </a>
 
-        <a sec:authorize="hasRole('ADMIN')"
-           th:href="@{/admin}" class="action-card">
-            <div class="icon">👥</div>
-            <h3>Gestionar Usuarios</h3>
-        </a>
+                <a sec:authorize="hasAnyRole('ADMIN','RECEPTIONIST')"
+                   th:href="@{/receptionist/payments}" class="action-card">
+                    <div class="icon">$</div>
+                    <h3>Pagos</h3>
+                </a>
 
-        <a sec:authorize="hasAnyRole('ADMIN','RECEPTIONIST')"
-           th:href="@{/receptionist/rooms}" class="action-card">
-            <div class="icon">🏨</div>
-            <h3>Habitaciones</h3>
-        </a>
+                <a sec:authorize="hasAnyRole('ADMIN','RECEPTIONIST')"
+                   th:href="@{/receptionist/promotions}" class="action-card">
+                    <div class="icon">%</div>
+                    <h3>Promociones</h3>
+                </a>
 
-        <a sec:authorize="hasAnyRole('ADMIN','RECEPTIONIST')"
-           th:href="@{/receptionist/reservations}" class="action-card">
-            <div class="icon">📅</div>
-            <h3>Reservaciones</h3>
-        </a>
+                <a sec:authorize="hasAnyRole('ADMIN','RECEPTIONIST')"
+                   th:href="@{/receptionist/services}" class="action-card">
+                    <div class="icon">S</div>
+                    <h3>Servicios</h3>
+                </a>
 
+                <a sec:authorize="hasAnyRole('ADMIN','RECEPTIONIST')"
+                   th:href="@{/receptionist/maintenance}" class="action-card">
+                    <div class="icon">!</div>
+                    <h3>Mantenimiento</h3>
+                </a>
 
-        <a sec:authorize="hasAnyRole('ADMIN','RECEPTIONIST')"
-           th:href="@{/receptionist/payments}" class="action-card">
-            <div class="icon">$</div>
-            <h3>Pagos</h3>
-        </a>
+                <a th:href="@{/mis-reservas}" class="action-card">
+                    <div class="icon">MR</div>
+                    <h3>Mis reservas</h3>
+                </a>
 
-        <a sec:authorize="hasAnyRole('ADMIN','RECEPTIONIST')"
-           th:href="@{/receptionist/promotions}" class="action-card">
-            <div class="icon">%</div>
-            <h3>Promociones</h3>
-        </a>
+                <a th:href="@{/mi-perfil}" class="action-card">
+                    <div class="icon">P</div>
+                    <h3>Mi perfil</h3>
+                </a>
 
-        <a sec:authorize="hasAnyRole('ADMIN','RECEPTIONIST')"
-           th:href="@{/receptionist/services}" class="action-card">
-            <div class="icon">+</div>
-            <h3>Servicios</h3>
-        </a>
+                <a th:href="@{/notifications}" class="action-card">
+                    <div class="icon">N</div>
+                    <h3>Notificaciones</h3>
+                </a>
+            </div>
 
-        <a sec:authorize="hasAnyRole('ADMIN','RECEPTIONIST')"
-           th:href="@{/receptionist/maintenance}" class="action-card">
-            <div class="icon">!</div>
-            <h3>Mantenimiento</h3>
-        </a>
+            <div class="rooms-panel">
+                <div class="rooms-head">
+                    <div class="rooms-title">
+                        <h2>Habitaciones disponibles</h2>
+                        <p th:if="${checkIn == null or checkOut == null}">Disponibilidad actual del hotel.</p>
+                        <p th:if="${checkIn != null and checkOut != null}">
+                            Disponibilidad del <span th:text="${checkIn}"></span> al <span th:text="${checkOut}"></span>.
+                        </p>
+                    </div>
 
-        <a th:href="@{/mis-reservas}" class="action-card">
-            <div class="icon">🛏</div>
-            <h3>Mis Reservas</h3>
-        </a>
+                    <form class="availability-form" th:action="@{/dashboard}" method="get">
+                        <div>
+                            <label for="checkIn">Entrada</label>
+                            <input id="checkIn" name="checkIn" type="date" th:value="${checkIn}">
+                        </div>
+                        <div>
+                            <label for="checkOut">Salida</label>
+                            <input id="checkOut" name="checkOut" type="date" th:value="${checkOut}">
+                        </div>
+                        <button class="btn btn-primary" type="submit">Buscar</button>
+                        <a class="btn btn-secondary" th:href="@{/dashboard}">Limpiar</a>
+                    </form>
+                </div>
 
-        <a th:href="@{/mi-perfil}" class="action-card">
-            <div class="icon">👤</div>
-            <h3>Mi Perfil</h3>
-        </a>
+                <div th:if="${availabilityError}" class="alert-error" th:text="${availabilityError}"></div>
 
-        <a th:href="@{/notifications}" class="action-card">
-            <div class="icon">i</div>
-            <h3>Notificaciones</h3>
-        </a>
+                <div class="rooms-summary">
+                    <span>
+                        <span class="rooms-count" th:text="${#lists.size(availableRooms)}">0</span>
+                        habitaciones disponibles
+                    </span>
+                    <span th:if="${checkIn == null or checkOut == null}">Selecciona entrada y salida para reservar desde una habitaci&oacute;n</span>
+                    <span th:if="${checkIn != null and checkOut != null}">Rango de fechas aplicado</span>
+                </div>
 
+                <div th:if="${#lists.isEmpty(availableRooms)}" class="empty-state">
+                    No hay habitaciones disponibles para esta consulta.
+                </div>
+
+                <div th:if="${!#lists.isEmpty(availableRooms)}" class="room-grid">
+                    <article class="room-card" th:each="room : ${availableRooms}">
+                        <div>
+                            <div class="room-number">
+                                <strong th:text="'Hab. ' + ${room.number}"></strong>
+                                <span class="status-pill">Disponible</span>
+                            </div>
+                            <div class="room-meta">
+                                <span th:text="'Piso ' + ${room.floor}"></span>
+                                <span th:text="${room.type}"></span>
+                                <span th:if="${room.description != null and !#strings.isEmpty(room.description)}"
+                                      th:text="${room.description}"></span>
+                            </div>
+                        </div>
+                        <div class="room-price">
+                            $<span th:text="${#numbers.formatDecimal(room.pricePerNight, 1, 2)}"></span> / noche
+                        </div>
+                        <div class="room-actions">
+                            <form sec:authorize="hasRole('GUEST')" th:action="@{/cliente/reservar}" method="get">
+                                <input type="hidden" name="roomId" th:value="${room.roomId}">
+                                <input type="hidden" name="checkIn" th:value="${checkIn}">
+                                <input type="hidden" name="checkOut" th:value="${checkOut}">
+                                <button class="btn btn-primary" type="submit" th:disabled="${!canReserveFromDashboard}">
+                                    Reservar
+                                </button>
+                            </form>
+                            <form sec:authorize="hasAnyRole('ADMIN','RECEPTIONIST')" th:action="@{/receptionist/reservations/new}" method="get">
+                                <input type="hidden" name="roomId" th:value="${room.roomId}">
+                                <input type="hidden" name="checkIn" th:value="${checkIn}">
+                                <input type="hidden" name="checkOut" th:value="${checkOut}">
+                                <button class="btn btn-primary" type="submit" th:disabled="${!canReserveFromDashboard}">
+                                    Crear reserva
+                                </button>
+                            </form>
+                            <span class="room-note" th:if="${!canReserveFromDashboard}">
+                                Elige entrada y salida para continuar.
+                            </span>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
     </div>
 </main>
 
-<!-- FOOTER -->
 <footer>
-    <hr>
-    <p>© 2026 Staytic. All rights reserved.</p>
+    <p>&copy; 2026 Staytic. All rights reserved.</p>
 </footer>
 
 </body>

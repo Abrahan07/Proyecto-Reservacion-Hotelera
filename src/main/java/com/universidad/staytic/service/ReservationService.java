@@ -195,6 +195,17 @@ public class ReservationService {
                 .toList();
     }
 
+    public List<Room> dashboardAvailableRooms(LocalDate checkIn, LocalDate checkOut) {
+        LocalDate effectiveCheckIn = checkIn == null && checkOut == null ? LocalDate.now() : checkIn;
+        LocalDate effectiveCheckOut = checkIn == null && checkOut == null ? LocalDate.now().plusDays(1) : checkOut;
+        validateDates(effectiveCheckIn, effectiveCheckOut);
+        return roomRepository.findAll().stream()
+                .filter(room -> room.getStatus() == RoomStatus.AVAILABLE)
+                .filter(room -> reservationRepository.countRoomConflicts(
+                        room.getRoomId(), effectiveCheckIn, effectiveCheckOut, null) == 0)
+                .toList();
+    }
+
     public ReservationForm toForm(Reservation reservation) {
         ReservationForm form = new ReservationForm();
         form.setReservationId(reservation.getReservationId());

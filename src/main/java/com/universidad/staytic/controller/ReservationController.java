@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Controller
 @RequestMapping("/receptionist/reservations")
@@ -42,8 +43,17 @@ public class ReservationController {
     }
 
     @GetMapping("/new")
-    public String createForm(Model model) {
-        model.addAttribute("reservationForm", new ReservationForm());
+    public String createForm(@RequestParam(required = false) Integer roomId,
+                             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate checkIn,
+                             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate checkOut,
+                             Model model) {
+        ReservationForm form = new ReservationForm();
+        if (roomId != null) {
+            form.setRoomIds(List.of(roomId));
+        }
+        form.setCheckIn(checkIn);
+        form.setCheckOut(checkOut);
+        model.addAttribute("reservationForm", form);
         addCatalogs(model);
         model.addAttribute("editing", false);
         return "reservations" +

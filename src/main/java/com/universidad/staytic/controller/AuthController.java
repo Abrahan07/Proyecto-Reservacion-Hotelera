@@ -1,21 +1,27 @@
 package com.universidad.staytic.controller;
 
 import com.universidad.staytic.model.User;
+import com.universidad.staytic.service.ReservationService;
 import com.universidad.staytic.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
 @Controller
 public class AuthController {
 
     private final UserService service;
+    private final ReservationService reservationService;
 
-    public AuthController(UserService service) {
+    public AuthController(UserService service, ReservationService reservationService) {
         this.service = service;
+        this.reservationService = reservationService;
     }
 
     @GetMapping("/")
@@ -51,12 +57,25 @@ public class AuthController {
     }
 
     @GetMapping("/dashboard")
-    public String dashboard(Model model, Authentication auth) {
+    public String dashboard(@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate checkIn,
+                            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate checkOut,
+                            Model model,
+                            Authentication auth) {
         model.addAttribute("email", auth.getName());
         model.addAttribute("roles", auth.getAuthorities());
         service.findByEmail(auth.getName()).ifPresent(u ->
                 model.addAttribute("userName", u.getName())
         );
+        model.addAttribute("checkIn", checkIn);
+        model.addAttribute("checkOut", checkOut);
+        try {
+            model.addAttribute("availableRooms", reservationService.dashboardAvailableRooms(checkIn, checkOut));
+            model.addAttribute("canReserveFromDashboard", checkIn != null && checkOut != null);
+        } catch (RuntimeException ex) {
+            model.addAttribute("availabilityError", ex.getMessage());
+            model.addAttribute("availableRooms", reservationService.dashboardAvailableRooms(null, null));
+            model.addAttribute("canReserveFromDashboard", false);
+        }
         return "dashboard";
     }
 
