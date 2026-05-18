@@ -2,6 +2,7 @@ package com.universidad.staytic.controller;
 
 import com.universidad.staytic.dto.CustomerPaymentForm;
 import com.universidad.staytic.dto.CustomerReservationForm;
+import com.universidad.staytic.model.PaymentMethod;
 import com.universidad.staytic.model.Promotion;
 import com.universidad.staytic.model.Reservation;
 import com.universidad.staytic.model.Room;
@@ -100,19 +101,32 @@ public class CustomerBookingController {
         Room room = customerBookingService.findRoom(form.getRoomId())
                 .orElseThrow(() -> new RuntimeException("Habitacion no encontrada"));
         addPaymentPreview(model, form, room);
+        model.addAttribute("paymentForm", new CustomerPaymentForm());
+        model.addAttribute("paymentMethods", PaymentMethod.values());
         model.addAttribute("pendingPayment", true);
         return "customer/payment";
     }
 
     @PostMapping("/pago/confirmar")
-    public String confirmPayment(HttpSession session,
+    public String confirmPayment(@Valid @ModelAttribute("paymentForm") CustomerPaymentForm paymentForm,
+                                 BindingResult result,
+                                 HttpSession session,
                                  Authentication authentication,
+                                 Model model,
                                  RedirectAttributes redirect) {
         CustomerReservationForm form = (CustomerReservationForm) session.getAttribute(PENDING_RESERVATION);
         if (form == null) {
             return "redirect:/dashboard";
         }
-        customerBookingService.createAndPayReservation(form, authentication.getName());
+        if (result.hasErrors()) {
+            Room room = customerBookingService.findRoom(form.getRoomId())
+                    .orElseThrow(() -> new RuntimeException("Habitacion no encontrada"));
+            addPaymentPreview(model, form, room);
+            model.addAttribute("paymentMethods", PaymentMethod.values());
+            model.addAttribute("pendingPayment", true);
+            return "customer/payment";
+        }
+        customerBookingService.createAndPayReservation(form, authentication.getName(), paymentForm.getPaymentMethod());
         session.removeAttribute(PENDING_RESERVATION);
         redirect.addFlashAttribute("success", "Pago confirmado y reservacion creada correctamente.");
         return "redirect:/mis-reservas";
@@ -136,15 +150,26 @@ public class CustomerBookingController {
         Reservation reservation = customerBookingService.getReservationForUser(reservationId, authentication.getName());
         model.addAttribute("reservation", reservation);
         model.addAttribute("paymentForm", new CustomerPaymentForm());
+        model.addAttribute("paymentMethods", PaymentMethod.values());
         model.addAttribute("pendingPayment", false);
         return "customer/payment";
     }
 
     @PostMapping("/pago/{reservationId}")
     public String pay(@PathVariable Integer reservationId,
+                      @Valid @ModelAttribute("paymentForm") CustomerPaymentForm paymentForm,
+                      BindingResult result,
                       Authentication authentication,
+                      Model model,
                       RedirectAttributes redirect) {
-        customerBookingService.payReservation(reservationId, authentication.getName());
+        if (result.hasErrors()) {
+            Reservation reservation = customerBookingService.getReservationForUser(reservationId, authentication.getName());
+            model.addAttribute("reservation", reservation);
+            model.addAttribute("paymentMethods", PaymentMethod.values());
+            model.addAttribute("pendingPayment", false);
+            return "customer/payment";
+        }
+        customerBookingService.payReservation(reservationId, authentication.getName(), paymentForm.getPaymentMethod());
         redirect.addFlashAttribute("success", "Pago realizado correctamente. Tu reservacion fue confirmada.");
         return "redirect:/mis-reservas";
     }

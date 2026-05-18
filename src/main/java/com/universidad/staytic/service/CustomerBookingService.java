@@ -88,9 +88,9 @@ public class CustomerBookingService {
 
     @PreAuthorize("hasRole('GUEST')")
     @Transactional
-    public Payment createAndPayReservation(CustomerReservationForm form, String email) {
+    public Payment createAndPayReservation(CustomerReservationForm form, String email, PaymentMethod paymentMethod) {
         Reservation reservation = reservationRepository.save(buildReservation(form, email));
-        return payReservation(reservation.getReservationId(), email);
+        return payReservation(reservation.getReservationId(), email, paymentMethod);
     }
 
     private Reservation buildReservation(CustomerReservationForm form, String email) {
@@ -132,22 +132,25 @@ public class CustomerBookingService {
     @PreAuthorize("hasRole('GUEST')")
     @Transactional
     public Payment payReservation(Integer reservationId, String email, PaymentMethod paymentMethod) {
-        return payReservation(reservationId, email);
-    }
-
-    @PreAuthorize("hasRole('GUEST')")
-    @Transactional
-    public Payment payReservation(Integer reservationId, String email) {
+        if (paymentMethod == null) {
+            throw new RuntimeException("El metodo de pago es obligatorio");
+        }
         Reservation reservation = getReservationForUser(reservationId, email);
         Payment payment = new Payment();
         payment.setReservation(reservation);
         payment.setAmount(reservation.calculateTotal());
-        payment.setPaymentMethod(PaymentMethod.ONLINE);
+        payment.setPaymentMethod(paymentMethod);
         payment.setPaymentDate(LocalDate.now());
         payment.setStatus("PAGADO");
         payment.setReference("CLI-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
         reservation.confirm();
         return paymentRepository.save(payment);
+    }
+
+    @PreAuthorize("hasRole('GUEST')")
+    @Transactional
+    public Payment payReservation(Integer reservationId, String email) {
+        return payReservation(reservationId, email, PaymentMethod.ONLINE);
     }
 
     @PreAuthorize("hasRole('GUEST')")
@@ -158,6 +161,18 @@ public class CustomerBookingService {
             throw new RuntimeException("No se puede anular una reservacion confirmada");
         }
         reservation.cancel();
+    }
+
+    @PreAuthorize("hasRole('GUEST')")
+    @Transactional
+    public void deleteReservationForUser(Integer reservationId, String email) {
+        Reservation reservation = getReservationForUser(reservationId, email);
+        if (reservation.getStatus() == ReservationStatus.ACTIVE) {
+            throw new RuntimeException("No se puede eliminar una reservacion activa");
+        }
+        reservation.cancel();
+        paymentRepository.deleteByReservationReservationId(reservationId);
+        reservationRepository.delete(reservation);
     }
 
     @PreAuthorize("hasRole('GUEST')")

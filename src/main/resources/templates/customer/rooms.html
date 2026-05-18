@@ -6,29 +6,196 @@
     <title>Staytic - Reservar</title>
     <style>
         * { box-sizing: border-box; }
-        :root { --brand:#8B2E2E; --dark:#6e2323; --bg:#f3f4f6; --panel:#fff; --line:#e5e7eb; --muted:#6b7280; }
-        body { margin:0; font-family:Arial,sans-serif; background:var(--bg); color:#222; }
-        header { background:var(--brand); color:white; padding:14px 22px; display:flex; justify-content:space-between; gap:16px; align-items:center; }
-        header a { color:white; text-decoration:none; font-weight:700; }
-        main { max-width:1120px; margin:28px auto; padding:0 16px; }
-        h1 { margin:0; color:var(--brand); font-size:30px; }
-        .subtitle { color:var(--muted); margin:6px 0 0; }
-        .search { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:16px; margin:18px 0; display:grid; grid-template-columns:1fr 1fr auto; gap:12px; align-items:end; }
-        label { display:block; font-size:13px; font-weight:700; margin-bottom:5px; }
-        input { width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:7px; }
-        .btn { border:0; border-radius:7px; padding:10px 14px; cursor:pointer; text-decoration:none; display:inline-block; font-weight:700; }
-        .btn-primary { background:var(--brand); color:white; }
-        .btn-primary:hover { background:var(--dark); }
-        .alert { background:#fdecea; color:#b3261e; padding:11px 12px; border-radius:7px; margin-bottom:14px; }
-        .empty { background:white; border:1px solid var(--line); border-radius:8px; padding:22px; color:var(--muted); text-align:center; }
-        .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; }
-        .room { background:white; border:1px solid var(--line); border-radius:8px; overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,.06); }
-        .photo { height:130px; background:linear-gradient(135deg,#8B2E2E,#c08457); display:flex; align-items:end; padding:14px; color:white; font-weight:800; font-size:24px; }
-        .body { padding:15px; }
-        .meta { display:flex; gap:8px; flex-wrap:wrap; margin:10px 0; }
-        .pill { padding:5px 9px; border-radius:999px; background:#f3f4f6; font-size:12px; font-weight:700; }
-        .price { font-size:22px; color:var(--brand); font-weight:800; margin:12px 0; }
-        @media(max-width:760px){ header,.search{grid-template-columns:1fr; align-items:stretch; flex-direction:column;} }
+        :root {
+            --brand: #8B2E2E;
+            --brand-dark: #6e2323;
+            --bg: #f5f6f8;
+            --panel: #ffffff;
+            --line: #e5e7eb;
+            --muted: #6b7280;
+            --text: #1f2937;
+            --soft: #f9fafb;
+        }
+        body {
+            margin: 0;
+            font-family: 'Playfair Display', serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+        header {
+            background: var(--brand);
+            color: white;
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            align-items: center;
+        }
+        header a {
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+        }
+        main {
+            max-width: 1120px;
+            margin: 30px auto;
+            padding: 0 16px;
+        }
+        .page-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+        h1 {
+            margin: 0;
+            color: var(--brand);
+            font-size: 30px;
+        }
+        .subtitle {
+            color: var(--muted);
+            margin: 7px 0 0;
+        }
+        .search {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 18px;
+            margin-bottom: 18px;
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 12px;
+            align-items: end;
+            box-shadow: 0 10px 26px rgba(15, 23, 42, .06);
+        }
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+        input {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font: inherit;
+        }
+        input:focus {
+            outline: 3px solid rgba(139, 46, 46, .14);
+            border-color: var(--brand);
+        }
+        .btn {
+            border: 0;
+            border-radius: 8px;
+            padding: 12px 15px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 800;
+            text-align: center;
+        }
+        .btn-primary {
+            background: var(--brand);
+            color: white;
+        }
+        .btn-primary:hover { background: var(--brand-dark); }
+        .alert {
+            background: #fdecea;
+            color: #b3261e;
+            padding: 12px 14px;
+            border-radius: 8px;
+            margin-bottom: 14px;
+            border: 1px solid #f2b8b5;
+            font-weight: 700;
+        }
+        .empty {
+            background: white;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 28px;
+            color: var(--muted);
+            text-align: center;
+            box-shadow: 0 10px 26px rgba(15, 23, 42, .06);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        .room {
+            background: white;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 26px rgba(15, 23, 42, .06);
+            display: grid;
+        }
+        .photo {
+            min-height: 126px;
+            background:
+                    linear-gradient(135deg, rgba(139,46,46,.92), rgba(74,85,104,.82)),
+                    linear-gradient(45deg, #f3f4f6 25%, transparent 25%),
+                    linear-gradient(-45deg, #ffffff 25%, transparent 25%);
+            display: flex;
+            align-items: flex-end;
+            padding: 16px;
+            color: white;
+            font-weight: 900;
+            font-size: 24px;
+        }
+        .body {
+            padding: 16px;
+            display: grid;
+            gap: 12px;
+        }
+        .meta {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .pill {
+            padding: 6px 9px;
+            border-radius: 999px;
+            background: var(--soft);
+            border: 1px solid var(--line);
+            font-size: 12px;
+            font-weight: 800;
+        }
+        .description {
+            color: var(--muted);
+            line-height: 1.45;
+            margin: 0;
+            min-height: 42px;
+        }
+        .footer {
+            border-top: 1px solid var(--line);
+            padding-top: 14px;
+            display: grid;
+            gap: 12px;
+        }
+        .price {
+            color: var(--brand);
+            font-weight: 900;
+            font-size: 23px;
+        }
+        .price small {
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 800;
+        }
+        @media(max-width:760px) {
+            header, .page-head {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .search {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -37,16 +204,20 @@
     <a th:href="@{/dashboard}">Dashboard</a>
 </header>
 <main>
-    <h1>Reservar habitacion</h1>
-    <p class="subtitle">Elige tus fechas y selecciona una habitacion disponible.</p>
+    <div class="page-head">
+        <div>
+            <h1>Reservar habitacion</h1>
+            <p class="subtitle">Elige fechas disponibles y continua con la confirmacion de tu reserva.</p>
+        </div>
+    </div>
 
     <form class="search" th:action="@{/cliente/habitaciones}" method="get">
         <div>
-            <label for="checkIn">Fecha de entrada</label>
+            <label for="checkIn">Entrada</label>
             <input id="checkIn" name="checkIn" type="date" th:value="${checkIn}" required>
         </div>
         <div>
-            <label for="checkOut">Fecha de salida</label>
+            <label for="checkOut">Salida</label>
             <input id="checkOut" name="checkOut" type="date" th:value="${checkOut}" required>
         </div>
         <button class="btn btn-primary" type="submit">Buscar disponibilidad</button>
@@ -67,12 +238,17 @@
                     <span class="pill" th:text="'Piso ' + ${r.floor}"></span>
                     <span class="pill" th:text="${r.status}"></span>
                 </div>
-                <p th:text="${#strings.isEmpty(r.description) ? 'Habitacion confortable para tu estadia.' : r.description}"></p>
-                <div class="price" th:text="'$ ' + ${#numbers.formatDecimal(r.pricePerNight,1,2)} + ' / noche'"></div>
-                <a class="btn btn-primary"
-                   th:href="@{/cliente/reservar(roomId=${r.roomId},checkIn=${checkIn},checkOut=${checkOut})}">
-                    Reservar
-                </a>
+                <p class="description" th:text="${#strings.isEmpty(r.description) ? 'Habitacion confortable para tu estadia.' : r.description}"></p>
+                <div class="footer">
+                    <div class="price">
+                        <span th:text="'$ ' + ${#numbers.formatDecimal(r.pricePerNight,1,0)}"></span>
+                        <small>/ noche</small>
+                    </div>
+                    <a class="btn btn-primary"
+                       th:href="@{/cliente/reservar(roomId=${r.roomId},checkIn=${checkIn},checkOut=${checkOut})}">
+                        Reservar esta habitacion
+                    </a>
+                </div>
             </div>
         </article>
     </section>

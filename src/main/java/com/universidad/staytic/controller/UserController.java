@@ -2,6 +2,7 @@ package com.universidad.staytic.controller;
 
 import com.universidad.staytic.dto.ProfileForm;
 import com.universidad.staytic.model.User;
+import com.universidad.staytic.service.CustomerBookingService;
 import com.universidad.staytic.service.ReservationService;
 import com.universidad.staytic.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -24,10 +26,14 @@ public class UserController {
 
     private final ReservationService reservationService;
     private final UserService userService;
+    private final CustomerBookingService customerBookingService;
 
-    public UserController(ReservationService reservationService, UserService userService) {
+    public UserController(ReservationService reservationService,
+                          UserService userService,
+                          CustomerBookingService customerBookingService) {
         this.reservationService = reservationService;
         this.userService = userService;
+        this.customerBookingService = customerBookingService;
     }
 
     @GetMapping("/mis-reservas")
@@ -37,6 +43,19 @@ public class UserController {
 
         model.addAttribute("reservations", reservations);
         return "reservations/mis-reservas";
+    }
+
+    @PostMapping("/mis-reservas/{id}/eliminar")
+    public String deleteMyReservation(@PathVariable Integer id,
+                                      Authentication auth,
+                                      RedirectAttributes redirect) {
+        try {
+            customerBookingService.deleteReservationForUser(id, auth.getName());
+            redirect.addFlashAttribute("success", "Reservacion eliminada correctamente");
+        } catch (RuntimeException ex) {
+            redirect.addFlashAttribute("error", ex.getMessage());
+        }
+        return "redirect:/mis-reservas";
     }
 
     @GetMapping("/mi-perfil")

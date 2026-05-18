@@ -9,77 +9,209 @@
         :root {
             --brand: #8B2E2E;
             --brand-dark: #6e2323;
-            --bg: #f3f4f6;
+            --bg: #f5f6f8;
             --panel: #ffffff;
-            --text: #222;
+            --text: #1f2937;
             --muted: #6b7280;
             --line: #e5e7eb;
+            --soft: #f9fafb;
+            --green: #1c7d4b;
+            --green-soft: #e9f6ef;
+            --amber: #8a6100;
+            --amber-soft: #fff7e6;
+            --danger: #b3261e;
+            --danger-soft: #fdecea;
         }
-        body { margin: 0; font-family: Arial, sans-serif; background: var(--bg); color: var(--text); }
+        body {
+            margin: 0;
+            font-family: 'Playfair Display', serif;
+            background: var(--bg);
+            color: var(--text);
+        }
         header {
             background: var(--brand);
             color: white;
-            padding: 14px 22px;
+            padding: 14px 24px;
             display: flex;
             justify-content: space-between;
             gap: 16px;
             align-items: center;
         }
-        header a { color: white; text-decoration: none; font-weight: 700; margin-left: 14px; }
-        main { max-width: 1120px; margin: 28px auto; padding: 0 16px; }
-        .page-head { display: flex; justify-content: space-between; gap: 18px; align-items: flex-end; margin-bottom: 18px; }
-        h1 { margin: 0; color: var(--brand); font-size: 30px; }
-        .subtitle { margin: 6px 0 0; color: var(--muted); }
+        header a {
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+            margin-left: 14px;
+        }
+        main {
+            max-width: 1120px;
+            margin: 30px auto;
+            padding: 0 16px;
+        }
+        .page-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 18px;
+            align-items: flex-end;
+            margin-bottom: 18px;
+        }
+        h1 {
+            margin: 0;
+            color: var(--brand);
+            font-size: 30px;
+        }
+        .subtitle {
+            margin: 7px 0 0;
+            color: var(--muted);
+        }
         .btn {
             border: 0;
-            border-radius: 7px;
-            padding: 10px 14px;
+            border-radius: 8px;
+            padding: 11px 14px;
             cursor: pointer;
             text-decoration: none;
             display: inline-block;
+            font-weight: 800;
+            text-align: center;
+            font-size: 14px;
+        }
+        .btn-primary { background: var(--brand); color: white; }
+        .btn-primary:hover { background: var(--brand-dark); }
+        .btn-secondary { background: #4b5563; color: white; }
+        .btn-danger {
+            background: white;
+            color: var(--danger);
+            border: 2px solid var(--danger);
+        }
+        .message {
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-bottom: 16px;
             font-weight: 700;
         }
-        .btn-secondary { background: #4b5563; color: white; }
+        .message-success { background: var(--green-soft); color: var(--green); border: 1px solid #b7dec8; }
+        .message-error { background: var(--danger-soft); color: var(--danger); border: 1px solid #f2b8b5; }
         .empty {
             background: white;
             border: 1px solid var(--line);
             border-radius: 8px;
-            padding: 28px;
+            padding: 34px;
             text-align: center;
             color: var(--muted);
+            box-shadow: 0 10px 26px rgba(15, 23, 42, .06);
         }
-        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+            gap: 16px;
+        }
         .card {
             background: var(--panel);
             border: 1px solid var(--line);
             border-radius: 8px;
-            padding: 16px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+            padding: 18px;
+            box-shadow: 0 10px 26px rgba(15, 23, 42, .06);
+            display: grid;
+            gap: 14px;
         }
-        .card-head { display: flex; justify-content: space-between; gap: 12px; align-items: start; margin-bottom: 14px; }
-        .reservation-id { font-size: 12px; color: var(--muted); font-weight: 700; text-transform: uppercase; }
+        .card-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: flex-start;
+        }
+        .reservation-id {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        .reservation-number {
+            color: var(--brand);
+            font-size: 24px;
+            font-weight: 900;
+        }
         .status {
-            padding: 5px 10px;
+            padding: 6px 10px;
             border-radius: 999px;
             font-size: 12px;
-            font-weight: 800;
-            background: #f7eaea;
-            color: var(--brand);
+            font-weight: 900;
+            background: #eef2ff;
+            color: #3730a3;
+            text-transform: uppercase;
+            white-space: nowrap;
         }
-        .row { margin-bottom: 12px; }
-        .label { display: block; color: var(--muted); font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
-        .value { font-weight: 700; }
-        .rooms { display: flex; gap: 8px; flex-wrap: wrap; }
+        .status-pending { background: var(--amber-soft); color: var(--amber); }
+        .status-confirmed { background: var(--green-soft); color: var(--green); }
+        .status-active { background: #e0f2fe; color: #075985; }
+        .status-cancelled { background: var(--danger-soft); color: var(--danger); }
+        .status-finished { background: #f3f4f6; color: #374151; }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .info {
+            background: var(--soft);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 12px;
+            min-height: 72px;
+        }
+        .label {
+            display: block;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .value {
+            font-weight: 800;
+            line-height: 1.35;
+        }
+        .rooms {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
         .room {
             padding: 6px 9px;
             border-radius: 7px;
-            background: #f3f4f6;
+            background: white;
             border: 1px solid var(--line);
-            font-weight: 700;
+            font-weight: 800;
         }
+        .total {
+            border-top: 1px solid var(--line);
+            padding-top: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+        }
+        .total span {
+            color: var(--muted);
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+        .total strong {
+            color: var(--brand);
+            font-size: 22px;
+        }
+        .card-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .card-actions form { margin: 0; }
+        .card-actions .btn { width: 100%; }
         @media (max-width: 760px) {
             header, .page-head { align-items: stretch; flex-direction: column; }
             header a { margin-left: 0; margin-right: 12px; }
+            .info-grid, .card-actions { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -96,10 +228,13 @@
     <div class="page-head">
         <div>
             <h1>Mis reservas</h1>
-            <p class="subtitle">Historial y estado de tus reservaciones.</p>
+            <p class="subtitle">Consulta el estado, paga reservas pendientes o elimina reservas que ya no necesites.</p>
         </div>
         <a class="btn btn-secondary" th:href="@{/dashboard}">Volver</a>
     </div>
+
+    <div class="message message-success" th:if="${success}" th:text="${success}"></div>
+    <div class="message message-error" th:if="${error}" th:text="${error}"></div>
 
     <div th:if="${#lists.isEmpty(reservations)}" class="empty">
         No tienes reservaciones registradas.
@@ -110,42 +245,69 @@
             <div class="card-head">
                 <div>
                     <div class="reservation-id">Reservacion</div>
-                    <strong th:text="'#' + ${r.reservationId}"></strong>
+                    <div class="reservation-number" th:text="'#' + ${r.reservationId}"></div>
                 </div>
-                <span class="status" th:text="${r.status}"></span>
+                <span th:classappend="${' status-' + #strings.toLowerCase(r.status.name())}"
+                      class="status"
+                      th:text="${r.status}"></span>
             </div>
 
-            <div class="row">
-                <span class="label">Fechas programadas</span>
-                <div th:if="${r.details != null and !#lists.isEmpty(r.details)}">
-                    <span class="value" th:text="${r.details[0].scheduledCheckIn}"></span>
-                    <span> a </span>
-                    <span class="value" th:text="${r.details[0].scheduledCheckOut}"></span>
+            <div class="info-grid">
+                <div class="info">
+                    <span class="label">Fechas programadas</span>
+                    <div th:if="${r.details != null and !#lists.isEmpty(r.details)}">
+                        <span class="value" th:text="${r.details[0].scheduledCheckIn}"></span>
+                        <span> a </span>
+                        <span class="value" th:text="${r.details[0].scheduledCheckOut}"></span>
+                    </div>
+                    <div th:if="${r.details == null or #lists.isEmpty(r.details)}" class="value">-</div>
                 </div>
-                <div th:if="${r.details == null or #lists.isEmpty(r.details)}" class="value">-</div>
+
+                <div class="info">
+                    <span class="label">Huespedes</span>
+                    <span class="value" th:text="${r.totalGuests + ' persona(s)'}"></span>
+                </div>
+
+                <div class="info">
+                    <span class="label">Habitaciones</span>
+                    <div class="rooms" th:if="${r.details != null and !#lists.isEmpty(r.details)}">
+                        <span class="room" th:each="d : ${r.details}"
+                              th:text="${d.room != null ? d.room.number : '-'}"></span>
+                    </div>
+                    <div th:if="${r.details == null or #lists.isEmpty(r.details)}" class="value">-</div>
+                </div>
+
+                <div class="info">
+                    <span class="label">Check-in / Check-out real</span>
+                    <div>
+                        <span th:text="${r.checkInDateTime == null ? '-' : #temporals.format(r.checkInDateTime, 'yyyy-MM-dd HH:mm')}"></span>
+                        <span> / </span>
+                        <span th:text="${r.checkOutDateTime == null ? '-' : #temporals.format(r.checkOutDateTime, 'yyyy-MM-dd HH:mm')}"></span>
+                    </div>
+                </div>
             </div>
 
-            <div class="row">
-                <span class="label">Check-in / Check-out real</span>
-                <div>
-                    <span th:text="${r.checkInDateTime == null ? '-' : #temporals.format(r.checkInDateTime, 'yyyy-MM-dd HH:mm')}"></span>
-                    <span> / </span>
-                    <span th:text="${r.checkOutDateTime == null ? '-' : #temporals.format(r.checkOutDateTime, 'yyyy-MM-dd HH:mm')}"></span>
-                </div>
+            <div class="total">
+                <span>Total</span>
+                <strong th:text="${'$ ' + #numbers.formatDecimal(r.calculateTotal(),1,0)}"></strong>
             </div>
 
-            <div class="row">
-                <span class="label">Habitaciones</span>
-                <div class="rooms" th:if="${r.details != null and !#lists.isEmpty(r.details)}">
-                    <span class="room" th:each="d : ${r.details}"
-                          th:text="${d.room != null ? d.room.number : '-'}"></span>
-                </div>
-                <div th:if="${r.details == null or #lists.isEmpty(r.details)}" class="value">-</div>
-            </div>
-
-            <div class="row">
-                <span class="label">Huespedes</span>
-                <span class="value" th:text="${r.totalGuests}"></span>
+            <div class="card-actions">
+                <a class="btn btn-primary"
+                   th:if="${r.status.name() == 'PENDING'}"
+                   th:href="@{/cliente/pago/{id}(id=${r.reservationId})}">
+                    Pagar reserva
+                </a>
+                <a class="btn btn-secondary"
+                   th:if="${r.status.name() != 'PENDING'}"
+                   th:href="@{/dashboard}">
+                    Nueva reserva
+                </a>
+                <form th:action="@{/mis-reservas/{id}/eliminar(id=${r.reservationId})}"
+                      method="post"
+                      onsubmit="return confirm('Deseas eliminar esta reservacion?');">
+                    <button class="btn btn-danger" type="submit">Eliminar</button>
+                </form>
             </div>
         </article>
     </section>

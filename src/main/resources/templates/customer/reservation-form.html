@@ -9,18 +9,20 @@
         :root {
             --brand: #8B2E2E;
             --brand-soft: #a84747;
+            --brand-dark: #6e2323;
             --ink: #2b2b2b;
             --muted: #666;
             --line: #d8d8d8;
             --panel: #ffffff;
             --green: #21a86b;
             --green-soft: #e7f8ee;
-            --bg: #f6f6f6;
+            --bg: #f5f6f8;
+            --soft: #f9fafb;
         }
 
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
+            font-family: 'Playfair Display', serif;
             background: var(--bg);
             color: var(--ink);
         }
@@ -43,14 +45,14 @@
 
         main {
             max-width: 1180px;
-            margin: 26px auto;
+            margin: 30px auto;
             padding: 0 16px;
         }
 
         .booking-layout {
             display: grid;
             grid-template-columns: minmax(0, 1.1fr) 410px;
-            gap: 28px;
+            gap: 18px;
             align-items: start;
         }
 
@@ -62,9 +64,9 @@
         .panel {
             background: var(--panel);
             border: 1px solid var(--line);
-            border-radius: 36px;
-            padding: 26px 28px;
-            box-shadow: 0 8px 28px rgba(0,0,0,0.04);
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 10px 26px rgba(15,23,42,0.06);
         }
 
         .section-title {
@@ -77,21 +79,23 @@
         }
 
         .step {
-            width: 26px;
-            height: 26px;
+            min-width: 30px;
+            height: 30px;
             border-radius: 999px;
             display: inline-grid;
             place-items: center;
             background: var(--green-soft);
             color: #178655;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 900;
             flex: 0 0 auto;
         }
 
         .room-strip {
             margin-left: 38px;
-            background: #e2f7ea;
+            background: var(--green-soft);
+            border: 1px solid #b7dec8;
+            border-radius: 8px;
             min-height: 76px;
             padding: 14px 18px;
             display: grid;
@@ -173,14 +177,19 @@
 
         .service-card {
             position: relative;
-            border: 1px solid #555;
-            border-radius: 2px;
-            min-height: 58px;
-            padding: 12px 12px 10px 42px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            min-height: 66px;
+            padding: 13px 12px 11px 42px;
             background: white;
             cursor: pointer;
             display: flex;
             align-items: center;
+        }
+
+        .service-card:hover {
+            border-color: var(--brand-soft);
+            box-shadow: 0 6px 16px rgba(139,46,46,0.08);
         }
 
         .service-card input {
@@ -194,7 +203,7 @@
 
         .service-name {
             display: block;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 900;
         }
 
@@ -217,9 +226,9 @@
             top: 18px;
             background: var(--panel);
             border: 1px solid var(--line);
-            border-radius: 36px;
-            padding: 34px 32px;
-            box-shadow: 0 8px 28px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 10px 26px rgba(15,23,42,0.06);
         }
 
         .summary h2 {
@@ -228,7 +237,9 @@
         }
 
         .summary-hero {
-            background: #e8e8e8;
+            background: var(--soft);
+            border: 1px solid var(--line);
+            border-radius: 8px;
             padding: 16px 20px;
             margin-bottom: 22px;
         }
@@ -267,7 +278,7 @@
             display: inline-block;
             min-width: 72px;
             text-align: center;
-            background: #9eedbb;
+            background: var(--green-soft);
             color: #13834f;
             border-radius: 999px;
             padding: 4px 12px;
@@ -294,7 +305,7 @@
 
         .btn {
             border: 0;
-            border-radius: 4px;
+            border-radius: 8px;
             padding: 15px 18px;
             font: inherit;
             font-weight: 700;
@@ -306,6 +317,10 @@
         .btn-primary {
             background: var(--brand-soft);
             color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--brand-dark);
         }
 
         .btn-outline {
@@ -354,7 +369,7 @@
 
         @media (max-width: 680px) {
             header { align-items: stretch; flex-direction: column; }
-            .panel, .summary { border-radius: 18px; padding: 20px; }
+            .panel, .summary { padding: 20px; }
             .room-strip, .guest-row, .services-grid, .promo-row, .notes-panel { margin-left: 0; }
             .room-strip { grid-template-columns: 1fr; }
             .guest-row, .promo-row { grid-template-columns: 1fr; }
@@ -383,7 +398,7 @@
             <section class="stack">
                 <div class="panel">
                     <div class="section-title">
-                        <span class="step"></span>
+                        <span class="step">OK</span>
                         <span>Habitaci&oacute;n seleccionada</span>
                     </div>
                     <div class="room-strip">
