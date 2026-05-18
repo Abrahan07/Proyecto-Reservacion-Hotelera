@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -37,6 +38,7 @@ public class UserController {
     }
 
     @GetMapping("/mis-reservas")
+    @PreAuthorize("hasRole('GUEST')")
     public String myReservations(Authentication auth, Model model) {
         String email = auth.getName();
         List<com.universidad.staytic.model.Reservation> reservations = reservationService.findReservationsByEmail(email);
@@ -46,6 +48,7 @@ public class UserController {
     }
 
     @PostMapping("/mis-reservas/{id}/eliminar")
+    @PreAuthorize("hasRole('GUEST')")
     public String deleteMyReservation(@PathVariable Integer id,
                                       Authentication auth,
                                       RedirectAttributes redirect) {

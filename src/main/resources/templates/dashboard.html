@@ -473,7 +473,7 @@
                     <h3>Mantenimiento</h3>
                 </a>
 
-                <a th:href="@{/mis-reservas}" class="action-card">
+                <a sec:authorize="hasRole('GUEST')" th:href="@{/mis-reservas}" class="action-card">
                     <div class="icon">MR</div>
                     <h3>Mis reservas</h3>
                 </a>

@@ -121,8 +121,12 @@ public class ReservationController {
 
     @PostMapping("/{id}/delete")
     public String delete(@PathVariable Integer id, RedirectAttributes redirect) {
-        reservationService.delete(id);
-        redirect.addFlashAttribute("success", "Reservacion eliminada correctamente");
+        try {
+            reservationService.delete(id);
+            redirect.addFlashAttribute("success", "Reservacion eliminada correctamente");
+        } catch (RuntimeException ex) {
+            redirect.addFlashAttribute("error", ex.getMessage());
+        }
         return "redirect:/receptionist/reservations";
     }
 

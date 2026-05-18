@@ -23,19 +23,22 @@ public class CustomerBookingService {
     private final ServiceRepository serviceRepository;
     private final PromotionRepository promotionRepository;
     private final PaymentRepository paymentRepository;
+    private final NotificationService notificationService;
 
     public CustomerBookingService(RoomRepository roomRepository,
                                   ReservationRepository reservationRepository,
                                   UserRepository userRepository,
                                   ServiceRepository serviceRepository,
                                   PromotionRepository promotionRepository,
-                                  PaymentRepository paymentRepository) {
+                                  PaymentRepository paymentRepository,
+                                  NotificationService notificationService) {
         this.roomRepository = roomRepository;
         this.reservationRepository = reservationRepository;
         this.userRepository = userRepository;
         this.serviceRepository = serviceRepository;
         this.promotionRepository = promotionRepository;
         this.paymentRepository = paymentRepository;
+        this.notificationService = notificationService;
     }
 
     @PreAuthorize("hasRole('GUEST')")
@@ -144,7 +147,10 @@ public class CustomerBookingService {
         payment.setStatus("PAGADO");
         payment.setReference("CLI-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
         reservation.confirm();
-        return paymentRepository.save(payment);
+        Payment savedPayment = paymentRepository.save(payment);
+        notificationService.notifyPaymentProcessed(savedPayment);
+        notificationService.notifyReservationConfirmed(reservation);
+        return savedPayment;
     }
 
     @PreAuthorize("hasRole('GUEST')")
@@ -161,6 +167,7 @@ public class CustomerBookingService {
             throw new RuntimeException("No se puede anular una reservacion confirmada");
         }
         reservation.cancel();
+        notificationService.notifyReservationCancelled(reservation);
     }
 
     @PreAuthorize("hasRole('GUEST')")

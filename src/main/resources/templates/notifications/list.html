@@ -6,21 +6,169 @@
     <title>Staytic - Notificaciones</title>
     <style>
         * { box-sizing: border-box; }
-        body { margin: 0; font-family: Arial, sans-serif; background: #f4f4f4; color: #222; }
-        header { background: #8B2E2E; color: white; padding: 14px 22px; display: flex; justify-content: space-between; gap: 16px; align-items: center; }
-        header a { color: white; text-decoration: none; font-weight: 600; }
-        main { max-width: 900px; margin: 26px auto; padding: 0 16px; }
-        h1 { margin: 0 0 18px; color: #8B2E2E; font-size: 28px; }
-        .alert { padding: 10px 12px; border-radius: 7px; margin-bottom: 14px; background: #e8f5e9; color: #1b5e20; }
-        .item { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 14px; margin-bottom: 12px; display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; }
-        .item.unread { border-left: 5px solid #8B2E2E; }
-        .type { font-size: 12px; font-weight: 700; color: #8B2E2E; text-transform: uppercase; }
-        .message { margin: 6px 0; }
-        .date { color: #666; font-size: 13px; }
-        .btn { border: 0; border-radius: 7px; padding: 8px 12px; cursor: pointer; font-weight: 600; background: #8B2E2E; color: white; }
-        .empty { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 18px; }
-        @media (max-width: 680px) {
-            header, .item { align-items: stretch; grid-template-columns: 1fr; }
+        :root {
+            --brand: #8B2E2E;
+            --brand-dark: #6e2323;
+            --bg: #f5f6f8;
+            --panel: #ffffff;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --line: #e5e7eb;
+            --soft-red: #f3dddd;
+            --danger: #b3261e;
+            --green: #1c7d4b;
+            --green-soft: #e9f6ef;
+        }
+        body {
+            margin: 0;
+            font-family: 'Playfair Display', serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+        header {
+            background: var(--brand);
+            color: white;
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            align-items: center;
+        }
+        header a {
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+        }
+        main {
+            max-width: 920px;
+            margin: 30px auto;
+            padding: 0 16px;
+        }
+        .page-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+        h1 {
+            margin: 0;
+            color: var(--brand);
+            font-size: 30px;
+        }
+        .subtitle {
+            margin: 7px 0 0;
+            color: var(--muted);
+        }
+        .alert {
+            padding: 12px 14px;
+            border-radius: 8px;
+            margin-bottom: 14px;
+            background: var(--green-soft);
+            color: var(--green);
+            border: 1px solid #b7dec8;
+            font-weight: 700;
+        }
+        .list {
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 26px rgba(15, 23, 42, .06);
+        }
+        .item {
+            display: grid;
+            grid-template-columns: 54px 1fr auto;
+            gap: 14px;
+            align-items: center;
+            padding: 18px 16px;
+            border-bottom: 1px solid #d1d5db;
+            background: white;
+        }
+        .item:last-child { border-bottom: 0; }
+        .item.unread {
+            background: #fffafa;
+        }
+        .icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: var(--soft-red);
+            color: var(--brand);
+            font-weight: 900;
+            font-size: 15px;
+        }
+        .icon-payment {
+            color: #9a3412;
+            background: #ffedd5;
+        }
+        .icon-reminder {
+            color: #92400e;
+            background: #fef3c7;
+        }
+        .icon-cancelled {
+            color: var(--danger);
+            background: #fdecea;
+        }
+        .content {
+            min-width: 0;
+        }
+        .title {
+            color: #4b5563;
+            font-size: 19px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+        .message {
+            color: #9ca3af;
+            font-size: 17px;
+            line-height: 1.35;
+            font-weight: 700;
+        }
+        .meta {
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+        .btn {
+            border: 0;
+            border-radius: 8px;
+            padding: 9px 12px;
+            cursor: pointer;
+            font-weight: 800;
+            background: var(--brand);
+            color: white;
+            white-space: nowrap;
+        }
+        .btn:hover { background: var(--brand-dark); }
+        .empty {
+            background: white;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 30px;
+            color: var(--muted);
+            text-align: center;
+            box-shadow: 0 10px 26px rgba(15, 23, 42, .06);
+        }
+        @media (max-width: 720px) {
+            header, .page-head {
+                align-items: stretch;
+                flex-direction: column;
+            }
+            .item {
+                grid-template-columns: 44px 1fr;
+                align-items: start;
+            }
+            .item form {
+                grid-column: 1 / -1;
+                margin-left: 58px;
+            }
+            .btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -31,7 +179,12 @@
 </header>
 
 <main>
-    <h1>Mis notificaciones</h1>
+    <div class="page-head">
+        <div>
+            <h1>Mis notificaciones</h1>
+            <p class="subtitle">Avisos de reservas, pagos y recordatorios importantes.</p>
+        </div>
+    </div>
 
     <div th:if="${success}" class="alert" th:text="${success}"></div>
 
@@ -39,16 +192,36 @@
         No tienes notificaciones.
     </div>
 
-    <div th:each="n : ${notifications}" th:class="${n.read} ? 'item' : 'item unread'">
-        <div>
-            <div class="type" th:text="${n.type}"></div>
-            <div class="message" th:text="${n.message}"></div>
-            <div class="date" th:text="${#temporals.format(n.sentAt, 'yyyy-MM-dd HH:mm')}"></div>
-        </div>
-        <form th:if="${!n.read}" th:action="@{/notifications/{id}/read(id=${n.notificationId})}" method="post">
-            <button class="btn" type="submit">Marcar leida</button>
-        </form>
-    </div>
+    <section class="list" th:if="${!#lists.isEmpty(notifications)}">
+        <article th:each="n : ${notifications}" th:class="${n.read} ? 'item' : 'item unread'">
+            <div th:class="${n.type == 'PAYMENT_PROCESSED' ? 'icon icon-payment' :
+                           (n.type == 'CHECKOUT_REMINDER' ? 'icon icon-reminder' :
+                           (n.type == 'RESERVATION_CANCELLED' ? 'icon icon-cancelled' : 'icon'))}"
+                 th:text="${n.type == 'PAYMENT_PROCESSED' ? '$' :
+                          (n.type == 'CHECKOUT_REMINDER' ? '!' :
+                          (n.type == 'RESERVATION_CANCELLED' ? 'X' : 'OK'))}">
+                OK
+            </div>
+
+            <div class="content">
+                <div class="title"
+                     th:text="${n.type == 'RESERVATION_CONFIRMED' ? 'Reservacion confirmada' :
+                              (n.type == 'CHECKOUT_REMINDER' ? 'Recordatorio de check-out' :
+                              (n.type == 'PAYMENT_PROCESSED' ? 'Pago procesado exitosamente' :
+                              (n.type == 'RESERVATION_CANCELLED' ? 'Reservacion cancelada' :
+                              (n.type == 'CHECKOUT_COMPLETED' ? 'Check-out registrado' :
+                              (n.type == 'RESERVATION_UPDATED' ? 'Reservacion actualizada' : n.type)))))}">
+                    Notificacion
+                </div>
+                <div class="message" th:text="${n.message}"></div>
+                <div class="meta" th:text="${#temporals.format(n.sentAt, 'yyyy-MM-dd HH:mm')}"></div>
+            </div>
+
+            <form th:if="${!n.read}" th:action="@{/notifications/{id}/read(id=${n.notificationId})}" method="post">
+                <button class="btn" type="submit">Marcar leida</button>
+            </form>
+        </article>
+    </section>
 </main>
 </body>
 </html>

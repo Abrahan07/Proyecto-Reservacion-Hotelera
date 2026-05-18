@@ -2,6 +2,7 @@ package com.universidad.staytic.service;
 
 import com.universidad.staytic.dto.ReservationForm;
 import com.universidad.staytic.model.*;
+import com.universidad.staytic.repository.PaymentRepository;
 import com.universidad.staytic.repository.PromotionRepository;
 import com.universidad.staytic.repository.ReservationRepository;
 import com.universidad.staytic.repository.RoomRepository;
@@ -23,17 +24,20 @@ public class ReservationService {
     private final RoomRepository roomRepository;
     private final PromotionRepository promotionRepository;
     private final NotificationService notificationService;
+    private final PaymentRepository paymentRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
                               UserRepository userRepository,
                               RoomRepository roomRepository,
                               PromotionRepository promotionRepository,
-                              NotificationService notificationService) {
+                              NotificationService notificationService,
+                              PaymentRepository paymentRepository) {
         this.reservationRepository = reservationRepository;
         this.userRepository = userRepository;
         this.roomRepository = roomRepository;
         this.promotionRepository = promotionRepository;
         this.notificationService = notificationService;
+        this.paymentRepository = paymentRepository;
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','RECEPTIONIST')")
@@ -126,16 +130,16 @@ public class ReservationService {
                 .orElseThrow(() -> new RuntimeException("Reservacion no encontrada"));
         applyForm(reservation, form, id);
         applyOperationalFields(reservation, form, employeeEmail);
-        notificationService.notifyReservation(reservation, "RESERVATION_UPDATED", "modificada");
+        notificationService.notifyReservationUpdated(reservation);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','RECEPTIONIST')")
     @Transactional
     public void delete(Integer id) {
-        if (!reservationRepository.existsById(id)) {
-            throw new RuntimeException("Reservacion no encontrada");
-        }
-        reservationRepository.deleteById(id);
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Reservacion no encontrada"));
+        paymentRepository.deleteByReservationReservationId(id);
+        reservationRepository.delete(reservation);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','RECEPTIONIST')")
@@ -145,13 +149,13 @@ public class ReservationService {
                 .orElseThrow(() -> new RuntimeException("Reservacion no encontrada"));
         if (status == ReservationStatus.CONFIRMED) {
             reservation.confirm();
-            notificationService.notifyReservation(reservation, "RESERVATION_CONFIRMED", "confirmada");
+            notificationService.notifyReservationConfirmed(reservation);
         } else if (status == ReservationStatus.CANCELLED) {
             reservation.cancel();
-            notificationService.notifyReservation(reservation, "RESERVATION_CANCELLED", "cancelada");
+            notificationService.notifyReservationCancelled(reservation);
         } else {
             reservation.setStatus(status);
-            notificationService.notifyReservation(reservation, "RESERVATION_UPDATED", "actualizada");
+            notificationService.notifyReservationUpdated(reservation);
         }
     }
 
@@ -164,6 +168,7 @@ public class ReservationService {
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
 
         reservation.checkIn(employee, realCheckInDateTime);
+        notificationService.notifyCheckOutReminder(reservation);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','RECEPTIONIST')")
@@ -183,6 +188,7 @@ public class ReservationService {
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
 
         reservation.checkOut(employee, realCheckOutDateTime, additionalCharges, penalty);
+        notificationService.notifyReservation(reservation, "CHECKOUT_COMPLETED", "finalizada");
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','RECEPTIONIST')")
@@ -262,6 +268,7 @@ public class ReservationService {
 
         if (form.getCheckInDateTime() != null) {
             reservation.checkIn(employee, form.getCheckInDateTime());
+            notificationService.notifyCheckOutReminder(reservation);
         }
 
         reservation.setAdditionalCharges(form.getAdditionalCharges());
@@ -270,6 +277,7 @@ public class ReservationService {
         if (form.getCheckOutDateTime() != null) {
             reservation.checkOut(employee, form.getCheckOutDateTime(),
                     form.getAdditionalCharges(), form.getPenalty());
+            notificationService.notifyReservation(reservation, "CHECKOUT_COMPLETED", "finalizada");
         }
     }
 

@@ -18,11 +18,14 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final ReservationRepository reservationRepository;
+    private final NotificationService notificationService;
 
     public PaymentService(PaymentRepository paymentRepository,
-                          ReservationRepository reservationRepository) {
+                          ReservationRepository reservationRepository,
+                          NotificationService notificationService) {
         this.paymentRepository = paymentRepository;
         this.reservationRepository = reservationRepository;
+        this.notificationService = notificationService;
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','RECEPTIONIST')")
@@ -46,7 +49,8 @@ public class PaymentService {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new RuntimeException("Reservacion no encontrada"));
         payment.setReservation(reservation);
-        paymentRepository.save(payment);
+        Payment savedPayment = paymentRepository.save(payment);
+        notificationService.notifyPaymentProcessed(savedPayment);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','RECEPTIONIST')")

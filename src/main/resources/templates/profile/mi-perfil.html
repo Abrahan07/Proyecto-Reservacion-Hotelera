@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -116,7 +117,7 @@
             <h1>Mi perfil</h1>
             <p class="subtitle">Consulta y actualiza tus datos personales.</p>
         </div>
-        <a class="btn btn-secondary" th:href="@{/mis-reservas}">Mis reservas</a>
+        <a sec:authorize="hasRole('GUEST')" class="btn btn-secondary" th:href="@{/mis-reservas}">Mis reservas</a>
     </div>
 
     <div th:if="${success}" class="alert" th:text="${success}"></div>
