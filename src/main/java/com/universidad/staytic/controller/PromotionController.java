@@ -4,6 +4,7 @@ import com.universidad.staytic.model.Promotion;
 import com.universidad.staytic.service.PromotionService;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -37,6 +38,7 @@ public class PromotionController {
     }
 
     @GetMapping("/new")
+    @PreAuthorize("hasRole('ADMIN')")
     public String createForm(Model model) {
         model.addAttribute("promotion", new Promotion());
         model.addAttribute("editing", false);
@@ -44,6 +46,7 @@ public class PromotionController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public String create(@Valid @ModelAttribute("promotion") Promotion promotion,
                          BindingResult result,
                          Model model,
@@ -64,6 +67,7 @@ public class PromotionController {
     }
 
     @GetMapping("/{id}/edit")
+    @PreAuthorize("hasRole('ADMIN')")
     public String editForm(@PathVariable Integer id, Model model) {
         Promotion promotion = promotionService.findById(id)
                 .orElseThrow(() -> new RuntimeException("Promocion no encontrada"));
@@ -73,6 +77,7 @@ public class PromotionController {
     }
 
     @PostMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String update(@PathVariable Integer id,
                          @Valid @ModelAttribute("promotion") Promotion promotion,
                          BindingResult result,
@@ -95,6 +100,7 @@ public class PromotionController {
     }
 
     @PostMapping("/{id}/delete")
+    @PreAuthorize("hasRole('ADMIN')")
     public String delete(@PathVariable Integer id, RedirectAttributes redirect) {
         promotionService.delete(id);
         redirect.addFlashAttribute("success", "Promocion eliminada correctamente");

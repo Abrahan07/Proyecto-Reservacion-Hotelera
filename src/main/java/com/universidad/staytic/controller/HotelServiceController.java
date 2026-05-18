@@ -3,6 +3,7 @@ package com.universidad.staytic.controller;
 import com.universidad.staytic.model.Service;
 import com.universidad.staytic.service.HotelServiceService;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -32,6 +33,7 @@ public class HotelServiceController {
     }
 
     @GetMapping("/new")
+    @PreAuthorize("hasRole('ADMIN')")
     public String createForm(Model model) {
         Service service = new Service();
         service.setAvailable(true);
@@ -41,6 +43,7 @@ public class HotelServiceController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public String create(@Valid @ModelAttribute("service") Service service,
                          BindingResult result,
                          Model model,
@@ -61,6 +64,7 @@ public class HotelServiceController {
     }
 
     @GetMapping("/{id}/edit")
+    @PreAuthorize("hasRole('ADMIN')")
     public String editForm(@PathVariable Integer id, Model model) {
         Service service = hotelServiceService.findById(id)
                 .orElseThrow(() -> new RuntimeException("Servicio no encontrado"));
@@ -70,6 +74,7 @@ public class HotelServiceController {
     }
 
     @PostMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String update(@PathVariable Integer id,
                          @Valid @ModelAttribute("service") Service service,
                          BindingResult result,
@@ -92,6 +97,7 @@ public class HotelServiceController {
     }
 
     @PostMapping("/{id}/delete")
+    @PreAuthorize("hasRole('ADMIN')")
     public String delete(@PathVariable Integer id, RedirectAttributes redirect) {
         hotelServiceService.delete(id);
         redirect.addFlashAttribute("success", "Servicio eliminado correctamente");

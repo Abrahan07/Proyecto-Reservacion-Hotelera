@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -85,10 +86,11 @@ public class ReservationController {
 
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Integer id, Model model) {
-        ReservationForm form = reservationService.findById(id)
-                .map(reservationService::toForm)
+        var reservation = reservationService.findById(id)
                 .orElseThrow(() -> new RuntimeException("Reservacion no encontrada"));
+        ReservationForm form = reservationService.toForm(reservation);
         model.addAttribute("reservationForm", form);
+        model.addAttribute("reservation", reservation);
         addCatalogs(model);
         model.addAttribute("editing", true);
         return "reservations/form";
@@ -137,6 +139,34 @@ public class ReservationController {
         reservationService.changeStatus(id, status);
         redirect.addFlashAttribute("success", "Estado de reservacion actualizado");
         return "redirect:/receptionist/reservations";
+    }
+
+    @PostMapping("/{id}/check-in")
+    public String checkIn(@PathVariable Integer id,
+                          Authentication authentication,
+                          RedirectAttributes redirect) {
+        try {
+            reservationService.checkIn(id, authentication.getName(), LocalDateTime.now());
+            redirect.addFlashAttribute("success", "Check-in registrado correctamente");
+        } catch (RuntimeException ex) {
+            redirect.addFlashAttribute("error", ex.getMessage());
+        }
+        return "redirect:/receptionist/reservations/" + id + "/edit";
+    }
+
+    @PostMapping("/{id}/check-out")
+    public String checkOut(@PathVariable Integer id,
+                           @RequestParam(defaultValue = "0") float additionalCharges,
+                           @RequestParam(defaultValue = "0") float penalty,
+                           Authentication authentication,
+                           RedirectAttributes redirect) {
+        try {
+            reservationService.checkOut(id, authentication.getName(), LocalDateTime.now(), additionalCharges, penalty);
+            redirect.addFlashAttribute("success", "Check-out registrado correctamente");
+        } catch (RuntimeException ex) {
+            redirect.addFlashAttribute("error", ex.getMessage());
+        }
+        return "redirect:/receptionist/reservations/" + id + "/edit";
     }
 
     @GetMapping("/availability")

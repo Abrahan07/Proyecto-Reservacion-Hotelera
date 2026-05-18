@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -46,7 +47,7 @@
 <main>
     <div class="topbar">
         <h1>Gestion de promociones</h1>
-        <a class="btn btn-primary" th:href="@{/receptionist/promotions/new}">Nueva promocion</a>
+        <a sec:authorize="hasRole('ADMIN')" class="btn btn-primary" th:href="@{/receptionist/promotions/new}">Nueva promocion</a>
     </div>
 
     <div th:if="${success}" class="alert" th:text="${success}"></div>
@@ -85,7 +86,7 @@
                 <th>Descripcion</th>
                 <th>Descuento</th>
                 <th>Vigencia</th>
-                <th>Acciones</th>
+                <th sec:authorize="hasRole('ADMIN')">Acciones</th>
             </tr>
             </thead>
             <tbody>
@@ -102,7 +103,7 @@
                     <span> a </span>
                     <span th:text="${p.endDate}"></span>
                 </td>
-                <td>
+                <td sec:authorize="hasRole('ADMIN')">
                     <div class="actions">
                         <a class="btn btn-secondary btn-small" th:href="@{/receptionist/promotions/{id}/edit(id=${p.promotionId})}">Editar</a>
                         <form th:action="@{/receptionist/promotions/{id}/delete(id=${p.promotionId})}" method="post"

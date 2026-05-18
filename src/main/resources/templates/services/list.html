@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -47,7 +48,7 @@
 <main>
     <div class="topbar">
         <h1>Servicios adicionales</h1>
-        <a class="btn btn-primary" th:href="@{/receptionist/services/new}">Nuevo servicio</a>
+        <a sec:authorize="hasRole('ADMIN')" class="btn btn-primary" th:href="@{/receptionist/services/new}">Nuevo servicio</a>
     </div>
 
     <div th:if="${success}" class="alert" th:text="${success}"></div>
@@ -86,7 +87,7 @@
                 <th>Descripcion</th>
                 <th>Precio</th>
                 <th>Disponible</th>
-                <th>Acciones</th>
+                <th sec:authorize="hasRole('ADMIN')">Acciones</th>
             </tr>
             </thead>
             <tbody>
@@ -102,7 +103,7 @@
                     <span th:class="${s.available} ? 'active' : 'inactive'"
                           th:text="${s.available} ? 'Si' : 'No'"></span>
                 </td>
-                <td>
+                <td sec:authorize="hasRole('ADMIN')">
                     <div class="actions">
                         <a class="btn btn-secondary btn-small" th:href="@{/receptionist/services/{id}/edit(id=${s.serviceId})}">Editar</a>
                         <form th:action="@{/receptionist/services/{id}/delete(id=${s.serviceId})}" method="post"

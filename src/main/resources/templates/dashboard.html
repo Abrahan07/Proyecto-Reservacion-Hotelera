@@ -466,7 +466,7 @@
 
         .availability-form {
             display: grid;
-            grid-template-columns: minmax(150px, 1fr) minmax(150px, 1fr) auto auto;
+            grid-template-columns: minmax(150px, 1fr) minmax(150px, 1fr) auto;
             gap: 0.55rem;
             align-items: end;
         }
@@ -717,13 +717,13 @@
                     <h3>Pagos</h3>
                 </a>
 
-                <a sec:authorize="hasAnyRole('ADMIN','RECEPTIONIST')"
+                <a sec:authorize="hasRole('ADMIN')"
                    th:href="@{/receptionist/promotions}" class="action-card">
                     <div class="icon">%</div>
                     <h3>Promociones</h3>
                 </a>
 
-                <a sec:authorize="hasAnyRole('ADMIN','RECEPTIONIST')"
+                <a sec:authorize="hasRole('ADMIN')"
                    th:href="@{/receptionist/services}" class="action-card">
                     <div class="icon">S</div>
                     <h3>Servicios</h3>
@@ -877,7 +877,7 @@
                         </p>
                     </div>
 
-                    <form class="availability-form" th:action="@{/dashboard}" method="get">
+                    <form id="dashboardAvailabilityForm" class="availability-form" th:action="@{/dashboard}" method="get">
                         <div>
                             <label for="checkIn">Entrada</label>
                             <input id="checkIn" name="checkIn" type="date" th:value="${checkIn}">
@@ -886,7 +886,6 @@
                             <label for="checkOut">Salida</label>
                             <input id="checkOut" name="checkOut" type="date" th:value="${checkOut}">
                         </div>
-                        <button class="btn btn-primary" type="submit">Buscar</button>
                         <a class="btn btn-secondary" th:href="@{/dashboard}">Limpiar</a>
                     </form>
                 </div>
@@ -955,5 +954,21 @@
     <p>&copy; 2026 Staytic. All rights reserved.</p>
 </footer>
 
+<script>
+    const dashboardAvailabilityForm = document.getElementById('dashboardAvailabilityForm');
+    const dashboardCheckInInput = document.getElementById('checkIn');
+    const dashboardCheckOutInput = document.getElementById('checkOut');
+
+    function submitDashboardAvailability() {
+        if (dashboardCheckInInput.value && dashboardCheckOutInput.value) {
+            dashboardAvailabilityForm.submit();
+        }
+    }
+
+    if (dashboardAvailabilityForm) {
+        dashboardCheckInInput.addEventListener('change', submitDashboardAvailability);
+        dashboardCheckOutInput.addEventListener('change', submitDashboardAvailability);
+    }
+</script>
 </body>
 </html>

@@ -112,7 +112,6 @@ public class ReservationService {
         Reservation reservation = new Reservation();
         reservation.setCreatedAt(LocalDateTime.now());
         applyForm(reservation, form, null);
-        applyOperationalFields(reservation, form, employeeEmail);
         reservationRepository.save(reservation);
     }
 
@@ -129,7 +128,6 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Reservacion no encontrada"));
         applyForm(reservation, form, id);
-        applyOperationalFields(reservation, form, employeeEmail);
         notificationService.notifyReservationUpdated(reservation);
     }
 
@@ -164,6 +162,15 @@ public class ReservationService {
     public void checkIn(Integer reservationId, String employeeEmail, LocalDateTime realCheckInDateTime) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new RuntimeException("Reservacion no encontrada"));
+        if (reservation.getStatus() == ReservationStatus.CANCELLED) {
+            throw new RuntimeException("No se puede registrar check-in en una reservacion cancelada");
+        }
+        if (reservation.getStatus() == ReservationStatus.FINISHED) {
+            throw new RuntimeException("No se puede registrar check-in en una reservacion finalizada");
+        }
+        if (reservation.getCheckInDateTime() != null) {
+            throw new RuntimeException("Esta reservacion ya tiene check-in registrado");
+        }
         User employee = userRepository.findByEmail(employeeEmail)
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
 
@@ -182,6 +189,15 @@ public class ReservationService {
                 .orElseThrow(() -> new RuntimeException("Reservacion no encontrada"));
         if (reservation.getCheckInDateTime() == null) {
             throw new RuntimeException("No se puede registrar check-out sin check-in previo");
+        }
+        if (reservation.getCheckOutDateTime() != null) {
+            throw new RuntimeException("Esta reservacion ya tiene check-out registrado");
+        }
+        if (reservation.getStatus() == ReservationStatus.CANCELLED) {
+            throw new RuntimeException("No se puede registrar check-out en una reservacion cancelada");
+        }
+        if (additionalCharges < 0 || penalty < 0) {
+            throw new RuntimeException("Los cargos adicionales y la penalizacion no pueden ser negativos");
         }
 
         User employee = userRepository.findByEmail(employeeEmail)

@@ -5,6 +5,7 @@ import com.universidad.staytic.model.RoomStatus;
 import com.universidad.staytic.model.RoomType;
 import com.universidad.staytic.service.RoomService;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -44,6 +45,7 @@ public class RoomController {
     }
 
     @GetMapping("/new")
+    @PreAuthorize("hasRole('ADMIN')")
     public String createForm(Model model) {
         Room room = new Room();
         room.setStatus(RoomStatus.AVAILABLE);
@@ -54,6 +56,7 @@ public class RoomController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public String create(@Valid @ModelAttribute("room") Room room,
                          BindingResult result,
                          Model model,
@@ -76,6 +79,7 @@ public class RoomController {
     }
 
     @GetMapping("/{id}/edit")
+    @PreAuthorize("hasRole('ADMIN')")
     public String editForm(@PathVariable Integer id, Model model) {
         Room room = roomService.findById(id)
                 .orElseThrow(() -> new RuntimeException("Habitacion no encontrada"));
@@ -86,6 +90,7 @@ public class RoomController {
     }
 
     @PostMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String update(@PathVariable Integer id,
                          @Valid @ModelAttribute("room") Room room,
                          BindingResult result,
@@ -110,6 +115,7 @@ public class RoomController {
     }
 
     @PostMapping("/{id}/delete")
+    @PreAuthorize("hasRole('ADMIN')")
     public String delete(@PathVariable Integer id, RedirectAttributes redirect) {
         roomService.delete(id);
         redirect.addFlashAttribute("success", "Habitacion eliminada correctamente");
@@ -117,6 +123,7 @@ public class RoomController {
     }
 
     @PostMapping("/{id}/status")
+    @PreAuthorize("hasRole('ADMIN')")
     public String changeStatus(@PathVariable Integer id,
                                @RequestParam RoomStatus status,
                                RedirectAttributes redirect) {
