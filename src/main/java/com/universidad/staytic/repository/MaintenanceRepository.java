@@ -12,6 +12,17 @@ import java.util.List;
 @Repository
 public interface MaintenanceRepository extends JpaRepository<Maintenance, Integer> {
 
+    List<Maintenance> findTop2ByStatusInOrderByScheduledDateAscMaintenanceIdDesc(List<MaintenanceStatus> statuses);
+
+    @Query("""
+            select count(m) from Maintenance m
+            where m.room.roomId = :roomId
+              and m.status in (com.universidad.staytic.model.MaintenanceStatus.REPORTED,
+                               com.universidad.staytic.model.MaintenanceStatus.SCHEDULED)
+              and (:maintenanceId is null or m.maintenanceId <> :maintenanceId)
+            """)
+    long countActiveByRoom(Integer roomId, Integer maintenanceId);
+
     @Query("""
             select m from Maintenance m
             where (:roomText is null or lower(m.room.number) like lower(concat('%', :roomText, '%')))

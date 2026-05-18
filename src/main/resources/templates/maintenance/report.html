@@ -16,6 +16,7 @@
         select, textarea { width: 100%; padding: 10px; border: 1px solid #bbb; border-radius: 6px; font-family: Arial, sans-serif; }
         textarea { min-height: 130px; resize: vertical; }
         .field { margin-bottom: 14px; }
+        .alert-error { padding: 10px 12px; border-radius: 7px; margin-bottom: 14px; background: #fdecea; color: #b3261e; border: 1px solid #f2b8b5; }
         .actions { display: flex; gap: 10px; margin-top: 18px; }
         .btn { border: 0; border-radius: 7px; padding: 10px 14px; cursor: pointer; text-decoration: none; display: inline-block; font-weight: 600; }
         .btn-primary { background: #8B2E2E; color: white; }
@@ -32,19 +33,21 @@
     <h1>Reportar problema en habitacion</h1>
 
     <section class="panel">
+        <div th:if="${error}" class="alert-error" th:text="${error}"></div>
         <form th:action="@{/receptionist/maintenance/report}" method="post">
             <div class="field">
                 <label for="roomId">Habitacion</label>
                 <select id="roomId" name="roomId" required>
                     <option value="">Seleccione una habitacion</option>
                     <option th:each="r : ${rooms}" th:value="${r.roomId}"
-                            th:text="${r.number + ' - Piso ' + r.floor + ' - ' + r.status}"></option>
+                            th:text="${r.number + ' - Piso ' + r.floor + ' - ' + r.status}"
+                            th:selected="${roomId != null and roomId == r.roomId}"></option>
                 </select>
             </div>
 
             <div class="field">
                 <label for="description">Descripcion del problema</label>
-                <textarea id="description" name="description" required></textarea>
+                <textarea id="description" name="description" required th:text="${description}"></textarea>
             </div>
 
             <div class="actions">

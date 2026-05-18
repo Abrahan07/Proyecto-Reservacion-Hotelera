@@ -1,6 +1,7 @@
 package com.universidad.staytic.controller;
 
 import com.universidad.staytic.model.User;
+import com.universidad.staytic.service.AdminDashboardService;
 import com.universidad.staytic.service.ReservationService;
 import com.universidad.staytic.service.UserService;
 import jakarta.validation.Valid;
@@ -18,10 +19,14 @@ public class AuthController {
 
     private final UserService service;
     private final ReservationService reservationService;
+    private final AdminDashboardService adminDashboardService;
 
-    public AuthController(UserService service, ReservationService reservationService) {
+    public AuthController(UserService service,
+                          ReservationService reservationService,
+                          AdminDashboardService adminDashboardService) {
         this.service = service;
         this.reservationService = reservationService;
+        this.adminDashboardService = adminDashboardService;
     }
 
     @GetMapping("/")
@@ -68,6 +73,9 @@ public class AuthController {
         );
         model.addAttribute("checkIn", checkIn);
         model.addAttribute("checkOut", checkOut);
+        if (auth.getAuthorities().stream().anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"))) {
+            model.addAttribute("adminStats", adminDashboardService.buildStats());
+        }
         try {
             model.addAttribute("availableRooms", reservationService.dashboardAvailableRooms(checkIn, checkOut));
             model.addAttribute("canReserveFromDashboard", checkIn != null && checkOut != null);

@@ -101,14 +101,25 @@ public class NotificationService {
         return notificationRepository.findByUserEmailOrderBySentAtDesc(email);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','RECEPTIONIST')")
+    public List<Notification> findAll() {
+        return notificationRepository.findAllByOrderBySentAtDesc();
+    }
+
     @PreAuthorize("isAuthenticated()")
     @Transactional
     public void markAsRead(Integer notificationId, String email) {
+        markAsRead(notificationId, email, false);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @Transactional
+    public void markAsRead(Integer notificationId, String email, boolean canManageAll) {
         Notification notification = notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new RuntimeException("Notificacion no encontrada"));
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        if (notification.getUser().getUserId() != user.getUserId()) {
+        if (!canManageAll && notification.getUser().getUserId() != user.getUserId()) {
             throw new RuntimeException("No puedes modificar esta notificacion");
         }
         notification.setRead(true);

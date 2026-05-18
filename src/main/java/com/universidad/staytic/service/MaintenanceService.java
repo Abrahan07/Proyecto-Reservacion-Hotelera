@@ -52,25 +52,42 @@ public class MaintenanceService {
     @PreAuthorize("hasAnyRole('ADMIN','RECEPTIONIST')")
     @Transactional
     public void save(Maintenance maintenance, Integer roomId, String employeeEmail) {
+        if (roomId == null) {
+            throw new RuntimeException("La habitacion es obligatoria");
+        }
+        Integer maintenanceId = maintenance.getMaintenanceId() == 0 ? null : maintenance.getMaintenanceId();
+        Maintenance current = maintenanceId == null ? null : maintenanceRepository.findById(maintenanceId)
+                .orElseThrow(() -> new RuntimeException("Mantenimiento no encontrado"));
+        Room previousRoom = current == null ? null : current.getRoom();
+
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new RuntimeException("Habitacion no encontrada"));
         User employee = userRepository.findByEmail(employeeEmail)
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
+
         maintenance.setRoom(room);
         maintenance.setEmployee(employee);
         if (maintenance.getStatus() == null) {
             maintenance.setStatus(MaintenanceStatus.SCHEDULED);
         }
-        if (maintenance.getStatus() == MaintenanceStatus.SCHEDULED
-                || maintenance.getStatus() == MaintenanceStatus.REPORTED) {
-            room.setStatus(RoomStatus.MAINTENANCE);
+
+        if (maintenance.getStatus() == MaintenanceStatus.COMPLETED && maintenance.getCompletedDate() == null) {
+            maintenance.setCompletedDate(LocalDateTime.now().withSecond(0).withNano(0));
         }
-        maintenanceRepository.save(maintenance);
+
+        Maintenance saved = maintenanceRepository.save(maintenance);
+        applyRoomStatusForMaintenance(room, saved.getMaintenanceId());
+        if (previousRoom != null && previousRoom.getRoomId() != room.getRoomId()) {
+            applyRoomStatusForMaintenance(previousRoom, saved.getMaintenanceId());
+        }
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','RECEPTIONIST')")
     @Transactional
     public void reportIssue(Integer roomId, String description, String employeeEmail) {
+        if (description == null || description.isBlank()) {
+            throw new RuntimeException("La descripcion del problema es obligatoria");
+        }
         Maintenance maintenance = new Maintenance();
         maintenance.setType("PROBLEMA");
         maintenance.setDescription(description);
@@ -87,17 +104,38 @@ public class MaintenanceService {
         maintenance.setCompletedDate(LocalDateTime.now().withSecond(0).withNano(0));
         maintenance.setStatus(MaintenanceStatus.COMPLETED);
         if (maintenance.getRoom() != null) {
-            maintenance.getRoom().setStatus(RoomStatus.AVAILABLE);
+            applyRoomStatusForMaintenance(maintenance.getRoom(), maintenance.getMaintenanceId());
         }
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','RECEPTIONIST')")
     @Transactional
     public void delete(Integer id) {
-        if (!maintenanceRepository.existsById(id)) {
-            throw new RuntimeException("Mantenimiento no encontrado");
+        Maintenance maintenance = maintenanceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Mantenimiento no encontrado"));
+        Room room = maintenance.getRoom();
+        maintenanceRepository.delete(maintenance);
+        if (room != null) {
+            applyRoomStatusForMaintenance(room, id);
         }
-        maintenanceRepository.deleteById(id);
+    }
+
+    private void applyRoomStatusForMaintenance(Room room, Integer currentMaintenanceId) {
+        if (room == null) {
+            return;
+        }
+        long activeMaintenance = maintenanceRepository.countActiveByRoom(room.getRoomId(), currentMaintenanceId);
+        Maintenance current = currentMaintenanceId == null ? null : maintenanceRepository.findById(currentMaintenanceId).orElse(null);
+        boolean currentIsActive = current != null
+                && (current.getStatus() == MaintenanceStatus.SCHEDULED || current.getStatus() == MaintenanceStatus.REPORTED)
+                && current.getRoom() != null
+                && current.getRoom().getRoomId() == room.getRoomId();
+
+        if (activeMaintenance > 0 || currentIsActive) {
+            room.setStatus(RoomStatus.MAINTENANCE);
+        } else if (room.getStatus() == RoomStatus.MAINTENANCE) {
+            room.setStatus(RoomStatus.AVAILABLE);
+        }
     }
 
     private String blankToNull(String value) {

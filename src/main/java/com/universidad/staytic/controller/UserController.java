@@ -62,6 +62,7 @@ public class UserController {
     }
 
     @GetMapping("/mi-perfil")
+    @PreAuthorize("hasRole('GUEST')")
     public String myProfile(Authentication auth, Model model) {
         String email = auth.getName();
         User user = userService.findByEmail(email)
@@ -73,6 +74,7 @@ public class UserController {
     }
 
     @PostMapping("/mi-perfil")
+    @PreAuthorize("hasRole('GUEST')")
     public String updateProfile(@Valid @ModelAttribute("profileForm") ProfileForm form,
                                 BindingResult result,
                                 Authentication auth,

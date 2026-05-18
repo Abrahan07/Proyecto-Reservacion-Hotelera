@@ -135,24 +135,41 @@ public class MaintenanceController {
     @PostMapping("/report")
     public String reportIssue(@RequestParam Integer roomId,
                               @RequestParam @NotBlank String description,
+                              Model model,
                               Authentication authentication,
                               RedirectAttributes redirect) {
-        maintenanceService.reportIssue(roomId, description, authentication.getName());
-        redirect.addFlashAttribute("success", "Problema reportado correctamente");
-        return "redirect:/receptionist/maintenance";
+        try {
+            maintenanceService.reportIssue(roomId, description, authentication.getName());
+            redirect.addFlashAttribute("success", "Problema reportado correctamente");
+            return "redirect:/receptionist/maintenance";
+        } catch (RuntimeException ex) {
+            model.addAttribute("rooms", maintenanceService.findRooms());
+            model.addAttribute("roomId", roomId);
+            model.addAttribute("description", description);
+            model.addAttribute("error", ex.getMessage());
+            return "maintenance/report";
+        }
     }
 
     @PostMapping("/{id}/complete")
     public String complete(@PathVariable Integer id, RedirectAttributes redirect) {
-        maintenanceService.complete(id);
-        redirect.addFlashAttribute("success", "Mantenimiento finalizado correctamente");
+        try {
+            maintenanceService.complete(id);
+            redirect.addFlashAttribute("success", "Mantenimiento finalizado correctamente");
+        } catch (RuntimeException ex) {
+            redirect.addFlashAttribute("error", ex.getMessage());
+        }
         return "redirect:/receptionist/maintenance";
     }
 
     @PostMapping("/{id}/delete")
     public String delete(@PathVariable Integer id, RedirectAttributes redirect) {
-        maintenanceService.delete(id);
-        redirect.addFlashAttribute("success", "Mantenimiento eliminado correctamente");
+        try {
+            maintenanceService.delete(id);
+            redirect.addFlashAttribute("success", "Mantenimiento eliminado correctamente");
+        } catch (RuntimeException ex) {
+            redirect.addFlashAttribute("error", ex.getMessage());
+        }
         return "redirect:/receptionist/maintenance";
     }
 }

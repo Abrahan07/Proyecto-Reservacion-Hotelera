@@ -13,6 +13,12 @@ import java.util.List;
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Integer> {
 
+    List<Reservation> findTop5ByOrderByReservationIdDesc();
+
+    long countByStatus(ReservationStatus status);
+
+    long countByStatusIn(List<ReservationStatus> statuses);
+
     @Query("""
             select distinct r from Reservation r
             join r.details d

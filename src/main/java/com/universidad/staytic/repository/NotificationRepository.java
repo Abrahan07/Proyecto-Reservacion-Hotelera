@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Integer> {
     List<Notification> findByUserEmailOrderBySentAtDesc(String email);
+    List<Notification> findAllByOrderBySentAtDesc();
 }

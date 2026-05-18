@@ -179,6 +179,264 @@
             margin-top: 0.8rem;
         }
 
+        .admin-dashboard {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(280px, 330px);
+            gap: 1.1rem;
+            align-items: start;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(180px, 1fr));
+            gap: 0.9rem;
+            margin-bottom: 1.1rem;
+        }
+
+        .kpi-card,
+        .admin-panel {
+            background: white;
+            border: 1px solid rgba(0,0,0,0.06);
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+        }
+
+        .kpi-card {
+            min-height: 118px;
+            padding: 1rem;
+            display: grid;
+            align-content: center;
+            text-align: center;
+            min-width: 0;
+        }
+
+        .kpi-card h3 {
+            color: #374151;
+            font-size: 0.95rem;
+            margin-bottom: 0.35rem;
+        }
+
+        .kpi-value {
+            color: #1f2937;
+            font-size: 2.1rem;
+            line-height: 1;
+            font-weight: 800;
+            letter-spacing: 0;
+            overflow-wrap: anywhere;
+        }
+
+        .kpi-value.green { color: #087a33; }
+        .kpi-value.blue { color: #2f63dd; }
+        .kpi-note {
+            color: #b3261e;
+            font-size: 0.72rem;
+            font-weight: 800;
+            margin-top: 0.35rem;
+        }
+
+        .admin-panel {
+            padding: 1rem;
+            margin-bottom: 1.1rem;
+        }
+
+        .admin-panel h2 {
+            color: #374151;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .room-type-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem 2rem;
+        }
+
+        .progress-label {
+            color: #374151;
+            font-size: 0.86rem;
+            font-weight: 800;
+            margin-bottom: 0.45rem;
+        }
+
+        .progress-track {
+            height: 7px;
+            border-radius: 999px;
+            background: #eee;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            min-width: 4px;
+            border-radius: 999px;
+            background: var(--brand);
+        }
+
+        .recent-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .recent-head h2 { margin-bottom: 0; }
+
+        .mini-search {
+            display: flex;
+            gap: 0.45rem;
+            align-items: center;
+        }
+
+        .mini-search input {
+            width: 170px;
+            padding: 0.48rem 0.65rem;
+            font-size: 0.78rem;
+            background: #f4f4f4;
+            border-color: #e5e7eb;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.83rem;
+        }
+
+        .admin-table th {
+            color: #6b7280;
+            background: #f7f7f7;
+            text-transform: uppercase;
+            font-size: 0.72rem;
+            padding: 0.75rem;
+            text-align: left;
+        }
+
+        .admin-table td {
+            border-bottom: 1px solid #f0f0f0;
+            padding: 0.75rem;
+            color: #374151;
+            font-weight: 700;
+        }
+
+        .admin-table tr:last-child td { border-bottom: 0; }
+
+        .room-chip,
+        .status-chip {
+            display: inline-block;
+            border-radius: 999px;
+            padding: 0.28rem 0.65rem;
+            font-size: 0.72rem;
+            font-weight: 900;
+        }
+
+        .room-chip { background: var(--brand); color: white; }
+        .status-chip { background: #e5f8ed; color: #23724a; }
+        .status-pending { background: #dbeafe; color: #1d4ed8; }
+        .status-cancelled { background: #fde68a; color: #92400e; }
+
+        .side-panel {
+            background: white;
+            border: 1px solid rgba(0,0,0,0.06);
+            border-radius: 10px;
+            padding: 1rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+            margin-bottom: 1.1rem;
+        }
+
+        .side-panel h2 {
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .bar-chart {
+            height: 150px;
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.55rem;
+            align-items: end;
+            border-top: 1px solid #ddd;
+            padding-top: 1rem;
+        }
+
+        .bar-wrap {
+            display: grid;
+            gap: 0.35rem;
+            justify-items: center;
+            align-items: end;
+            height: 100%;
+        }
+
+        .bar {
+            width: 28px;
+            min-height: 12px;
+            border-radius: 10px 10px 5px 5px;
+            background: #3561b8;
+        }
+
+        .bar.today { background: #050505; }
+        .bar-label {
+            color: #6b7280;
+            font-size: 0.75rem;
+            font-weight: 800;
+        }
+
+        .revenue-summary {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+            color: #374151;
+            font-size: 0.82rem;
+            font-weight: 800;
+            margin-top: 0.8rem;
+        }
+
+        .revenue-summary strong {
+            display: block;
+            color: #087a33;
+            font-size: 0.95rem;
+        }
+
+        .maintenance-list {
+            display: grid;
+            gap: 0.85rem;
+            border-top: 1px solid #ddd;
+            padding-top: 1rem;
+        }
+
+        .maintenance-item {
+            display: grid;
+            grid-template-columns: 100px 1fr;
+            gap: 0.8rem;
+            align-items: center;
+        }
+
+        .maintenance-badge {
+            border-radius: 999px;
+            padding: 0.48rem 0.7rem;
+            background: #ffedd5;
+            color: #f97316;
+            font-size: 0.78rem;
+            font-weight: 900;
+            text-align: center;
+        }
+
+        .maintenance-card {
+            background: #dbe4f4;
+            border-left: 4px solid #9fb4db;
+            padding: 0.6rem;
+            color: #374151;
+            font-size: 0.78rem;
+            font-weight: 800;
+        }
+
+        .maintenance-card p {
+            color: #4b5563;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.25rem;
+        }
+
         .rooms-panel {
             overflow: hidden;
         }
@@ -380,6 +638,7 @@
 
         @media (max-width: 920px) {
             .dashboard-shell { grid-template-columns: 1fr; }
+            .admin-dashboard { grid-template-columns: 1fr; }
             .welcome-card { position: static; }
             .rooms-head { grid-template-columns: 1fr; }
             .availability-form { grid-template-columns: 1fr; }
@@ -389,6 +648,9 @@
             header { align-items: stretch; flex-direction: column; }
             main { margin: 1.2rem auto; padding: 0 0.8rem; }
             .cards-grid { grid-template-columns: 1fr 1fr; }
+            .kpi-grid, .room-type-grid, .revenue-summary { grid-template-columns: 1fr; }
+            .recent-head, .mini-search { align-items: stretch; flex-direction: column; }
+            .mini-search input { width: 100%; }
             .room-grid { grid-template-columns: 1fr; }
         }
     </style>
@@ -478,7 +740,7 @@
                     <h3>Mis reservas</h3>
                 </a>
 
-                <a th:href="@{/mi-perfil}" class="action-card">
+                <a sec:authorize="hasRole('GUEST')" th:href="@{/mi-perfil}" class="action-card">
                     <div class="icon">P</div>
                     <h3>Mi perfil</h3>
                 </a>
@@ -489,7 +751,123 @@
                 </a>
             </div>
 
-            <div class="rooms-panel">
+            <div sec:authorize="hasRole('ADMIN')" class="admin-dashboard">
+                <div>
+                    <div class="kpi-grid">
+                        <div class="kpi-card">
+                            <h3>Ocupacion hoy</h3>
+                            <div class="kpi-value blue" th:text="${adminStats.occupancyPercent + '%'}">0%</div>
+                        </div>
+                        <div class="kpi-card">
+                            <h3>Ingresos mensuales</h3>
+                            <div class="kpi-value green" th:text="${'$ ' + #numbers.formatDecimal(adminStats.monthlyRevenue,1,0)}">$0</div>
+                        </div>
+                        <div class="kpi-card">
+                            <h3>Reservaciones activas</h3>
+                            <div class="kpi-value" th:text="${adminStats.activeReservations}">0</div>
+                        </div>
+                        <div class="kpi-card">
+                            <h3>Habitacion disponible</h3>
+                            <div class="kpi-value" th:text="${adminStats.availableRooms}">0</div>
+                            <div class="kpi-note" th:text="${adminStats.maintenanceRooms + ' en mantenimiento'}">0 en mantenimiento</div>
+                        </div>
+                    </div>
+
+                    <section class="admin-panel">
+                        <h2>Ocupacion por tipo de habitacion</h2>
+                        <div class="room-type-grid">
+                            <div th:each="item : ${adminStats.roomTypeOccupancy}">
+                                <div class="progress-label" th:text="${item.type}">Suite</div>
+                                <div class="progress-track">
+                                    <div class="progress-fill" th:style="${'width:' + item.percent + '%'}"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="admin-panel">
+                        <div class="recent-head">
+                            <h2>Reservaciones recientes</h2>
+                            <form class="mini-search" th:action="@{/receptionist/reservations}" method="get">
+                                <input name="userText" type="text" placeholder="Buscar registro...">
+                                <button class="btn btn-primary" type="submit">Buscar</button>
+                            </form>
+                        </div>
+                        <table class="admin-table">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Cliente</th>
+                                <th>Habitacion</th>
+                                <th>Estado</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:if="${#lists.isEmpty(adminStats.recentReservations)}">
+                                <td colspan="4">No hay reservaciones registradas.</td>
+                            </tr>
+                            <tr th:each="r : ${adminStats.recentReservations}">
+                                <td th:text="${'#' + r.reservationId}">#1</td>
+                                <td th:text="${r.user.name}">Cliente</td>
+                                <td>
+                                    <span class="room-chip"
+                                          th:text="${r.details != null and !#lists.isEmpty(r.details) ? r.details[0].room.number : '-'}">101</span>
+                                </td>
+                                <td>
+                                    <span th:classappend="${r.status.name() == 'PENDING' ? ' status-pending' :
+                                                          (r.status.name() == 'CANCELLED' ? ' status-cancelled' : '')}"
+                                          class="status-chip"
+                                          th:text="${r.status}">CONFIRMED</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </section>
+                </div>
+
+                <aside>
+                    <section class="side-panel">
+                        <h2>Ingresos ultimos 7 dias</h2>
+                        <div class="bar-chart">
+                            <div class="bar-wrap" th:each="day, iter : ${adminStats.revenueDays}">
+                                <div th:class="${iter.last} ? 'bar today' : 'bar'"
+                                     th:style="${'height:' + day.percent + '%'}"></div>
+                                <span class="bar-label" th:text="${day.label}">L</span>
+                            </div>
+                        </div>
+                        <div class="revenue-summary">
+                            <div>
+                                Promedio diario:
+                                <strong th:text="${'$ ' + #numbers.formatDecimal(adminStats.dailyAverageRevenue,1,0)}">$0</strong>
+                            </div>
+                            <div>
+                                Total:
+                                <strong th:text="${'$ ' + #numbers.formatDecimal(adminStats.weeklyRevenue,1,0)}">$0</strong>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="side-panel">
+                        <h2>Mantenimiento pendiente</h2>
+                        <div class="maintenance-list">
+                            <div th:if="${#lists.isEmpty(adminStats.pendingMaintenances)}">No hay mantenimientos pendientes.</div>
+                            <div class="maintenance-item" th:each="m : ${adminStats.pendingMaintenances}">
+                                <div>
+                                    <div class="maintenance-badge" th:text="${m.status == T(com.universidad.staytic.model.MaintenanceStatus).REPORTED ? 'En progreso' : 'Programado'}">Programado</div>
+                                    <div class="room-note" th:text="${'Programado: ' + #temporals.format(m.scheduledDate, 'HH:mm')}">Programado</div>
+                                </div>
+                                <div class="maintenance-card">
+                                    <strong th:text="${'Habitacion ' + m.room.number + ' ' + m.room.type}">Habitacion</strong>
+                                    <p th:text="${m.description}">Descripcion</p>
+                                </div>
+                            </div>
+                            <a class="btn btn-primary" th:href="@{/receptionist/maintenance}">Ver todos</a>
+                        </div>
+                    </section>
+                </aside>
+            </div>
+
+            <div sec:authorize="!hasRole('ADMIN')" class="rooms-panel">
                 <div class="rooms-head">
                     <div class="rooms-title">
                         <h2>Habitaciones disponibles</h2>

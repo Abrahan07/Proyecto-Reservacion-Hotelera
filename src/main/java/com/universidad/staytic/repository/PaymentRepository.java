@@ -14,6 +14,8 @@ public interface PaymentRepository extends JpaRepository<Payment, Integer> {
 
     void deleteByReservationReservationId(Integer reservationId);
 
+    List<Payment> findByPaymentDateBetween(LocalDate startDate, LocalDate endDate);
+
     @Query("""
             select p from Payment p
             where (:reservationText is null

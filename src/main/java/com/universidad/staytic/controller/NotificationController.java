@@ -20,7 +20,10 @@ public class NotificationController {
 
     @GetMapping("/notifications")
     public String notifications(Authentication authentication, Model model) {
-        model.addAttribute("notifications", notificationService.findByUserEmail(authentication.getName()));
+        boolean internalUser = isInternalUser(authentication);
+        model.addAttribute("notifications", internalUser
+                ? notificationService.findAll()
+                : notificationService.findByUserEmail(authentication.getName()));
         return "notifications/list";
     }
 
@@ -28,8 +31,18 @@ public class NotificationController {
     public String markAsRead(@PathVariable Integer id,
                              Authentication authentication,
                              RedirectAttributes redirect) {
-        notificationService.markAsRead(id, authentication.getName());
-        redirect.addFlashAttribute("success", "Notificacion marcada como leida");
+        try {
+            notificationService.markAsRead(id, authentication.getName(), isInternalUser(authentication));
+            redirect.addFlashAttribute("success", "Notificacion marcada como leida");
+        } catch (RuntimeException ex) {
+            redirect.addFlashAttribute("error", ex.getMessage());
+        }
         return "redirect:/notifications";
+    }
+
+    private boolean isInternalUser(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN")
+                        || authority.getAuthority().equals("ROLE_RECEPTIONIST"));
     }
 }

@@ -14,6 +14,7 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
 
     boolean existsByNumber(String number);
     boolean existsByNumberAndRoomIdNot(String number, Integer roomId);
+    long countByStatus(RoomStatus status);
 
     @Query("""
             select r from Room r

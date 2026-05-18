@@ -22,6 +22,7 @@
         label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 5px; }
         input, select { width: 100%; padding: 9px 10px; border: 1px solid #bbb; border-radius: 6px; }
         .alert { padding: 10px 12px; border-radius: 7px; margin-bottom: 14px; background: #e8f5e9; color: #1b5e20; }
+        .alert-error { background: #fdecea; color: #b3261e; border: 1px solid #f2b8b5; }
         .table-wrap { overflow-x: auto; background: white; border: 1px solid #ddd; border-radius: 8px; }
         table { width: 100%; border-collapse: collapse; min-width: 1050px; }
         th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; vertical-align: top; }
@@ -54,6 +55,7 @@
     </div>
 
     <div th:if="${success}" class="alert" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
 
     <section class="panel">
         <form class="filters" th:action="@{/receptionist/maintenance}" method="get">

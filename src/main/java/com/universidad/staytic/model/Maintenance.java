@@ -16,7 +16,6 @@ public class Maintenance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int maintenanceId;
 
-    @NotNull(message = "La habitacion es obligatoria")
     @ManyToOne(optional = false)
     @JoinColumn(name = "room_id")
     private Room room;
